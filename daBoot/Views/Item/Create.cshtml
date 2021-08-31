@@ -1,0 +1,60 @@
+﻿@model daBoot.Models.Item 
+
+<form method="post" asp-action="Create">
+    <input asp-for="Id" hidden />
+    <div class="container p-3">
+        <div class="form-group row">
+            <h1 class="text-black-50 pl-3">Add Item</h1>
+        </div>
+        <!--Server Side Validation-->
+        <div asp-validation-summary="All" class="text-danger"></div>
+
+        <div class="row">
+            <div class="col-12">
+                <div class="form-group row">
+                    <div class="col-4">
+                        <label asp-for="ItemName"></label>
+                    </div>
+                    <div class="col-4">
+                        <label asp-for="Borrower"></label>
+                    </div>
+                    <div class="col-4">
+                        <label asp-for="Lender"></label>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-4">
+                        <input asp-for="ItemName" class="form-control" />
+                        <!--Server Side Validation-->
+                        <span asp-validation-for="ItemName" class="text-danger"></span>
+                    </div>
+                    <div class="col-4">
+                        <input asp-for="Borrower" class="form-control" />
+                        <!--Server Side Validation-->
+                        <span asp-validation-for="Borrower" class="text-danger"></span>
+                    </div>
+                    <div class="col-4">
+                        <input asp-for="Lender" class="form-control" />
+                        <!--Server Side Validation-->
+                        <span asp-validation-for="Lender" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-8 offset-2 row">
+                        <div class="col text-left">
+                            <input type="submit" class="btn btn-success w-50" value="Create" />
+                        </div>
+                        <div class="col text-right">
+                            <a class="btn btn-danger w-50" asp-action="Index">Back</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<!--Client Side Validation-->
+@section Scripts{ 
+    @{ <partial name="_ValidationScriptsPartial" />}
+}

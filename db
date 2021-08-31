@@ -1,0 +1,89 @@
+//// -- LEVEL 1
+//// -- Tables and References
+
+// Creating tables
+
+Table Users {
+  userid int [pk, increment] // auto-increment
+  firstname varchar
+  lastname varchar
+  email varchar
+}
+
+Table Projects {
+  projectid int [pk, increment] // auto-increment
+  name varchar
+}
+
+Table Roles {
+  roleid int [pk, increment] // auto-increment
+  name varchar
+}
+
+Table UserProjectRole {
+  userid int
+  projectid int
+  roleid int
+  Indexes {
+    (userid, projectid, roleid) [pk]
+  }
+}
+
+Table TeamMembers {
+  userid int
+  teammemberuserid int
+  Indexes {
+    (userid, teammemberuserid) [pk]
+  }
+}
+
+Table Tickets {
+  ticketid int [pk, increment]
+  projectid int
+  subject varchar
+  assignerid int
+  assigntimestamp datetime
+  assigneeid int
+  deadline datetime
+  statusid int
+  statustimestamp datetime
+  description varchar
+}
+
+Table Status {
+  statusid int [pk, increment]
+  name varchar
+}
+
+Table Comments {
+  commentid int [pk, increment]
+  userid int
+  comment varchar
+  commenttimestamp datetime
+  ticketid int
+}
+
+Table Approval {
+  approvalid int [pk, increment]
+  requesterid int
+  item varchar
+  statusid int
+  approverid int
+}
+
+Ref: Users.userid < TeamMembers.userid  
+Ref: Users.userid < TeamMembers.teammemberuserid  
+Ref: Users.userid < UserProjectRole.userid
+Ref: Projects.projectid < UserProjectRole.projectid  
+Ref: Roles.roleid < UserProjectRole.roleid 
+Ref: Status.statusid < Tickets.statusid 
+Ref: Projects.projectid < Tickets.projectid 
+Ref: Users.userid < Tickets.assignerid
+Ref: Users.userid < Tickets.assigneeid
+Ref: Tickets.ticketid < Comments.ticketid
+Ref: Users.userid < Comments.userid
+Ref: Users.userid < Approval.approverid
+Ref: Users.userid < Approval.requesterid
+Ref: Status.statusid < Approval.statusid 
+
+
