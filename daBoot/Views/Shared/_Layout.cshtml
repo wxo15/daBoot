@@ -12,20 +12,23 @@
 <body>
     <div id="mySidebar" class="sidebar">
         <a href="javascript:void(0)" id="sidebarclose" class="closebtn" onclick="closeNav()"><i class="fa fa-arrow-left"></i></a>
-        <div style="height:30vh;">
-
-
+        <div class="text-light" style="height:40vh;">
+            @if (User.Identity.IsAuthenticated){
+                <h3>Welcome, @User.Identity.Name</h3>
+            }
         </div>
-        <div style="list-style-type: none; padding: 0; margin: 0; height:50vh;">
-        <a class="nav-link text-light sidebar-item" style="width:100%;">Dashboard</a>
-        <a class="nav-link text-light sidebar-item" style="width:100%;">Projects & Roles</a>
-        <a class="nav-link text-light sidebar-item" style="width:100%;">Your Profile</a>
-        <a class="nav-link text-light sidebar-item" style="width:100%;">Team Members</a>
-        <div class="row notification">
-            <a class="nav-link text-light sidebar-item" style="width:100%;">Notifications</a>
-            <span class="badge">3</span>
-        </div>
-        <a class="nav-link text-light sidebar-item" style="width:100%;">Logout</a>
+        <div class="border-top" style="list-style-type: none; padding: 0; margin: 0; height:50vh;">
+            @if (User.Identity.IsAuthenticated){
+                <a class="nav-link text-light sidebar-item" style="width:100%;">Dashboard</a>
+                <a class="nav-link text-light sidebar-item" style="width:100%;">Projects & Roles</a>
+                <a class="nav-link text-light sidebar-item" style="width:100%;">Your Profile</a>
+                <a class="nav-link text-light sidebar-item" style="width:100%;">Team Members</a>
+                <div class="row notification">
+                    <a class="nav-link text-light sidebar-item" style="width:100%;">Notifications</a>
+                    <span class="badge">3</span>
+                </div>
+                <a class="nav-link text-light sidebar-item" style="width:100%;" asp-controller="Home" asp-action="Logout">Logout</a>
+            }
         </div>
     </div>
 

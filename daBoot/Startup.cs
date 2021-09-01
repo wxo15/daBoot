@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace daBoot
 {
@@ -30,6 +31,11 @@ namespace daBoot
             );
 
             services.AddControllersWithViews();
+            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+                .AddCookie(options => { 
+                    options.LoginPath = "/home/login";
+                    options.AccessDeniedPath = "/home/accessdenied";
+                });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -49,7 +55,7 @@ namespace daBoot
             app.UseStaticFiles(); // Use wwwroot files
 
             app.UseRouting();
-
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
