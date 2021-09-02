@@ -15,5 +15,6 @@ namespace daBoot.Data
         }
 
         public DbSet<Item> Items{ get; set; }
+        public DbSet<Account> Users { get; set; }
     }
 }
