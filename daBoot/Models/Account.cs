@@ -21,6 +21,13 @@ namespace daBoot.Models
         [Required]
         public string EmailAddress { get; set; }
 
-
+        public Account(string username, string password, string firstName, string lastName, string emailAddress)
+        {
+            Username = username;
+            Password = password;
+            FirstName = firstName;
+            LastName = lastName;
+            EmailAddress = emailAddress;
+        }
     }
 }

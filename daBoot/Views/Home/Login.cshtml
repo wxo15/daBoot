@@ -5,12 +5,172 @@
     var returnUrl = ViewData["ReturnUrl"] as string;
     var error = TempData["Error"] as string;
 }
-<h1>Login</h1>
-@if (!string.IsNullOrEmpty(error)){
+
+@if (!string.IsNullOrEmpty(error))
+{
     <h2 class="alert-danger" style="padding:20px;">@error</h2>
 }
-<form action="/login?ReturnUrl=@System.Net.WebUtility.UrlEncode(returnUrl)" method="post">
-    <input type="text" name="username" placeholder="Username" />
-    <input type="password" name="password" placeholder="Password" />
-    <input type="submit" value="Login" />
-</form>
+<script>
+    function flip() {
+        document.querySelector("#flipper").classList.toggle("flip");
+    }
+
+    function createUnorderedList(list, bulletChar) {
+        var result = "";
+        for (var i = 0; i < list.length; ++i) {
+            result += bulletChar + " " + list[i] + "\n";
+        }
+        return result;
+    }
+    function validateUsername() {
+        var username = document.forms["RegForm"]["username"];
+        if (username.value.length < 5 || username.value.length > 20) {
+            document.getElementById("usernameval").innerHTML = "Username must be at least 5 and at most 20 characters long.";
+            document.getElementById("usernameval").style.color = "red";
+            return false;
+        }
+        if (!(/^[A-Za-z0-9]+$/i.test(username.value))) {
+            document.getElementById("usernameval").innerHTML = "Username must be alphanumeric only.";
+            document.getElementById("usernameval").style.color = "red";
+            return false;
+        }
+        document.getElementById("usernameval").innerHTML = "Valid username.";
+        document.getElementById("usernameval").style.color = "green";
+        return true;
+    }
+
+    function validateFirstname() {
+        var firstname = document.forms["RegForm"]["firstname"];
+        if (firstname.value == "") {
+            document.getElementById("firstnameval").innerHTML = "First Name cannot be empty.";
+            document.getElementById("firstnameval").style.color = "red";
+            return false;
+        }
+        if (!(/^[a-zA-Z\s]*$/.test(firstname.value))) {
+            document.getElementById("firstnameval").innerHTML = "First Name must be letters and space only.";
+            document.getElementById("firstnameval").style.color = "red";
+            return false;
+        }
+        document.getElementById("firstnameval").innerHTML = "Valid first name.";
+        document.getElementById("firstnameval").style.color = "green";
+        return true;
+    }
+
+    function validateLastname() {
+        var lastname = document.forms["RegForm"]["lastname"];
+        if (lastname.value == "") {
+            document.getElementById("lastnameval").innerHTML = "Last Name cannot be empty.";
+            document.getElementById("lastnameval").style.color = "red";
+            return false;
+        }
+        if (!(/^[a-zA-Z\s]*$/.test(lastname.value))) {
+            document.getElementById("lastnameval").innerHTML = "Last Name must be letters and space only.";
+            document.getElementById("lastnameval").style.color = "red";
+            return false;
+        }
+        document.getElementById("lastnameval").innerHTML = "Valid last name.";
+        document.getElementById("lastnameval").style.color = "green";
+        return true;
+    }
+
+    function validateEmail() {
+        var email = document.forms["RegForm"]["email"];
+        if (!(/^\w+([\.-]?\w+)*@@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email.value))) {
+            document.getElementById("emailval").innerHTML = "Email address not valid.";
+            document.getElementById("emailval").style.color = "red";
+            return false;
+        }
+        document.getElementById("emailval").innerHTML = "Valid email.";
+        document.getElementById("emailval").style.color = "green";
+        return true;
+    }
+
+    function validatePassword() {
+        var password = document.forms["RegForm"]["password"];
+        if (!(/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/.test(password.value))) {
+            document.getElementById("passwordval").innerHTML = "Password must have > 7 characters, at least one letter and one number.";
+            document.getElementById("passwordval").style.color = "red";
+            return false;
+        }
+        document.getElementById("passwordval").innerHTML = "Valid password.";
+        document.getElementById("passwordval").style.color = "green";
+        return true;
+    }
+
+    function registerValidation() {
+        var username = validateUsername();
+        var firstname = validateFirstname();
+        var lastname = validateLastname();
+        var email = validateEmail();
+        var password = validatePassword();
+
+        return username && firstname && lastname && email && password;
+    }
+</script>
+
+<div class="flip-container">
+    <div class="flipper" id="flipper">
+        <div class="front" style="text-align:center;">
+            <h1>Login</h1>
+            <form action="/login?ReturnUrl=@System.Net.WebUtility.UrlEncode(returnUrl)" method="post">
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="basic-addon1">@@</span>
+                    </div>
+                    <input type="text" class="form-control" name="username" placeholder="Username" aria-label="Username" aria-describedby="basic-addon1" required="required" />
+                </div>
+                <div class="input-group mb-3">
+                    <input type="password" class="form-control" name="password" placeholder="Password" aria-label="Password" required="required" />
+                </div>
+                <div class="input-group mb-3">
+                    <input type="submit" class="btn btn-success" value="Login" />
+                </div>
+            </form>
+            <button class="btn btn-primary" onclick="flip()">Create my account</button>
+        </div>
+
+        <div class="back" style="text-align:center;">
+            <h1>Register</h1>
+            <form name="RegForm" action="/register?ReturnUrl=@System.Net.WebUtility.UrlEncode(returnUrl)" method="post" onsubmit="return registerValidation()">
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="basic-addon1">@@</span>
+                    </div>
+                    <input type="text" class="form-control" name="username" placeholder="Username" aria-label="Username" aria-describedby="basic-addon1" onchange="validateUsername()" />
+                </div>
+                <div class="mb-3">
+                    <small id="usernameval"></small>
+                </div>
+                <div class="input-group">
+                    <input type="text" class="form-control" name="firstname" placeholder="First Name" aria-label="First Name" onchange="validateFirstname()" />
+                </div>
+                <div class="mb-3">
+                    <small id="firstnameval" style="font-size:x-small"></small>
+                </div>
+                <div class="input-group">
+                    <input type="text" class="form-control" name="lastname" placeholder="Last Name" aria-label="Last Name" onchange="validateLastname()" />
+                </div>
+                <div class="mb-3">
+                    <small id="lastnameval"></small>
+                </div>
+                <div class="input-group">
+                    <input type="email" class="form-control" name="email" placeholder="Email Address" aria-label="Email Address" onchange="validateEmail()" />
+                </div>
+                <div class="mb-3">
+                    <small id="emailval"></small>
+                </div>
+                <div class="input-group">
+                    <input type="password" class="form-control" name="password" placeholder="Password" aria-label="Password" onchange="validatePassword()" />
+                </div>
+                <div class="mb-3">
+                    <small id="passwordval"></small>
+                </div>
+                <div class="input-group mb-3">
+                    <input type="submit" class="btn btn-primary" value="Register" />
+                </div>
+            </form>
+            <button class="btn btn-success" onclick="flip()">Login to my account</button>
+        </div>
+    </div>
+    <br class="clear" />
+</div>

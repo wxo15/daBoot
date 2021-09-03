@@ -78,3 +78,55 @@
         font-size: 18px;
     }
 }
+
+.flip-container {
+    perspective: 1000px;
+    display: flex;
+    flex-direction: column;
+}
+.flipper {
+    padding: 30px;
+    margin: auto;
+    width: 400px;
+    height: 50vh;
+    position: relative;
+    transition: 0.6s;
+    transform-style: preserve-3d;
+}
+
+.front, .back {
+    position: absolute;
+    padding: 10px 30px;
+    background: #f5f5f5;
+    -webkit-border-radius: 20px;
+    -moz-border-radius: 20px;
+    border-radius: 20px;
+    top: 0;
+    left: 0;
+    right: 0;
+    backface-visibility: hidden;
+}
+input {
+    width: 100%;
+}
+.front{
+	z-index: 2;
+	transform: rotateY(0deg);
+}
+
+.back{
+    transform: rotateY(180deg);
+}
+.flip{
+	transform: rotateY(180deg);
+}
+
+.flipbutton{
+    color:#4096ee;
+    text-decoration:none;
+    text-align:left !important;
+}
+
+.clear {
+    clear: both;
+}

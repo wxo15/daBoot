@@ -63,6 +63,12 @@ namespace daBoot.Controllers
             var salt = Convert.ToBase64String(algorithm.Salt);
             string str = $"{IterationNum}.{KeySize}.{SaltSize}.{salt}.{key}";
             */
+            if (user == null)
+            {
+                ViewData["ReturnUrl"] = returnUrl;
+                TempData["Error"] = "Username/password invalid.";
+                return View("login");
+            }
 
             var parts = user.Password.Split('.', 5);
             var IterationNum = Convert.ToInt32(parts[0]);
@@ -78,7 +84,7 @@ namespace daBoot.Controllers
                 HashAlgorithmName.SHA256);
             var keyToCheck = Convert.ToBase64String(algorithm.GetBytes(KeySize));
 
-            if (user == null || !keyToCheck.SequenceEqual(key))
+            if (!keyToCheck.SequenceEqual(key))
             {
                 ViewData["ReturnUrl"] = returnUrl;
                 TempData["Error"] = "Username/password invalid.";
@@ -88,6 +94,53 @@ namespace daBoot.Controllers
             claims.Add(new Claim("username", username));
             claims.Add(new Claim(ClaimTypes.NameIdentifier, username));
             claims.Add(new Claim(ClaimTypes.Name, user.FirstName + " " + user.LastName));
+            var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+            var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
+            await HttpContext.SignInAsync(claimsPrincipal);
+            return Redirect(returnUrl);
+        }
+
+        [HttpPost("register")]
+        public async Task<IActionResult> Register(string username, string password, string firstname, string lastname, string email, string returnUrl)
+        {
+            if (username == null || password == null || firstname == null || lastname == null || email == null)
+            {
+                ViewData["ReturnUrl"] = returnUrl;
+                TempData["Error"] = "All fields required.";
+                return View("login");
+            }
+
+            Account user = await _db.Users.FirstOrDefaultAsync(u => u.Username == username);
+
+            if (user != null)
+            {
+                ViewData["ReturnUrl"] = returnUrl;
+                TempData["Error"] = "Username already exist.";
+                return View("login");
+            }
+
+            int KeySize = 32;
+            int SaltSize = 16;
+            int IterationNum = 10000;
+            var algorithm = new Rfc2898DeriveBytes(
+                password,
+                SaltSize,
+                IterationNum,
+                HashAlgorithmName.SHA256);
+            var key = Convert.ToBase64String(algorithm.GetBytes(KeySize));
+            var salt = Convert.ToBase64String(algorithm.Salt);
+            string str = $"{IterationNum}.{KeySize}.{SaltSize}.{salt}.{key}";
+
+            var obj = new Account(username, str, firstname, lastname, email);
+            _db.Users.Add(obj);
+            _db.SaveChanges();
+
+            var claims = new List<Claim>
+            {
+                new Claim("username", username),
+                new Claim(ClaimTypes.NameIdentifier, username),
+                new Claim(ClaimTypes.Name, firstname + " " + lastname)
+            };
             var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
             var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
             await HttpContext.SignInAsync(claimsPrincipal);
