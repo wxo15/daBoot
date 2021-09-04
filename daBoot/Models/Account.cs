@@ -18,6 +18,7 @@ namespace daBoot.Models
         public string LastName { get; set; }
         [Required]
         public string EmailAddress { get; set; }
+        //public string ProfilePic { get; set; }
 
         /* Username + password constructor*/
         public Account(string username, string password, string firstName, string lastName, string emailAddress)

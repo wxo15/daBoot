@@ -28,21 +28,28 @@ namespace daBoot.Controllers
         }
         
         [HttpGet("oauth/{provider}")]
-        public async Task<IActionResult> OAuthLogin([FromRoute] string provider)
+        public IActionResult OAuthLogin([FromRoute] string provider)
         {
             if (User != null && User.Identities.Any(identity => identity.IsAuthenticated))
             {
                 RedirectToAction("", "Home");
             }
             // Hard coded redirect, as Home page contains a DB check of the profile.
-            string returnUrl = "/";
+            string returnUrl = "oauth/confirmation/";
             var res = new ChallengeResult(provider, new AuthenticationProperties() { RedirectUri = returnUrl });
+            return res;
+        }
+
+        [HttpGet("oauth/confirmation")]
+        public async Task<IActionResult> OAuthConfirm()
+        {
+            // checks for OAuth, adding accounts to DB after redirected back from provider
             if (User.Identity.IsAuthenticated)
             {
                 var username = User.Claims.FirstOrDefault(c => c.Type == "username").Value;
                 var name = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value;
                 var nameparts = name.Split(' ', 2);
-                var email = User.Claims.FirstOrDefault(c => c.Type == "email").Value;
+                var email = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email).Value;
                 var obj = new Account(username, nameparts[0], nameparts[1], email);
                 Account user = await _db.Users.FirstOrDefaultAsync(u => u.Username == username);
                 if (user == null)
@@ -50,9 +57,11 @@ namespace daBoot.Controllers
                     _db.Users.Add(obj);
                     _db.SaveChanges();
                 };
-            }
-            return res;
+            };
+            return Redirect("~/Home/Index");
         }
+
+                    
 
         [HttpGet("home/accessdenied")]
         public IActionResult Denied()
@@ -61,22 +70,8 @@ namespace daBoot.Controllers
         }
 
         [Authorize]
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
-            // checks for OAuth, adding accounts to DB after redirected back from provider
-            var username = User.Claims.FirstOrDefault(c => c.Type == "username").Value;
-            var name = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value;
-            var nameparts = name.Split(' ', 2);
-            var firstname = nameparts[0];
-            var lastname = nameparts[1];
-            var email = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email).Value;
-            Account user = await _db.Users.FirstOrDefaultAsync(u => u.Username == username);
-            if (user is null)
-            {
-                var obj = new Account(username, firstname, lastname, email); 
-                _db.Users.Add(obj);
-                _db.SaveChanges();
-            };
             return View();
         }
 
