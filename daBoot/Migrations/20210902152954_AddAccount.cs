@@ -12,7 +12,6 @@ namespace daBoot.Migrations
                 table: "Items",
                 type: "text",
                 nullable: false,
-                defaultValue: "",
                 oldClrType: typeof(string),
                 oldType: "text",
                 oldNullable: true);
@@ -22,7 +21,6 @@ namespace daBoot.Migrations
                 table: "Items",
                 type: "text",
                 nullable: false,
-                defaultValue: "",
                 oldClrType: typeof(string),
                 oldType: "text",
                 oldNullable: true);
@@ -32,7 +30,6 @@ namespace daBoot.Migrations
                 table: "Items",
                 type: "text",
                 nullable: false,
-                defaultValue: "",
                 oldClrType: typeof(string),
                 oldType: "text",
                 oldNullable: true);

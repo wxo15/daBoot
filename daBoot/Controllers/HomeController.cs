@@ -28,16 +28,31 @@ namespace daBoot.Controllers
         }
         
         [HttpGet("oauth/{provider}")]
-        public IActionResult OAuthLogin([FromRoute] string provider, [FromQuery] string returnUrl = "/")
+        public async Task<IActionResult> OAuthLogin([FromRoute] string provider)
         {
             if (User != null && User.Identities.Any(identity => identity.IsAuthenticated))
             {
                 RedirectToAction("", "Home");
             }
-            returnUrl = string.IsNullOrEmpty(returnUrl) ? "/" : returnUrl;
-            return new ChallengeResult(provider, new AuthenticationProperties() { RedirectUri = returnUrl });
+            // Hard coded redirect, as Home page contains a DB check of the profile.
+            string returnUrl = "/";
+            var res = new ChallengeResult(provider, new AuthenticationProperties() { RedirectUri = returnUrl });
+            if (User.Identity.IsAuthenticated)
+            {
+                var username = User.Claims.FirstOrDefault(c => c.Type == "username").Value;
+                var name = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value;
+                var nameparts = name.Split(' ', 2);
+                var email = User.Claims.FirstOrDefault(c => c.Type == "email").Value;
+                var obj = new Account(username, nameparts[0], nameparts[1], email);
+                Account user = await _db.Users.FirstOrDefaultAsync(u => u.Username == username);
+                if (user == null)
+                {
+                    _db.Users.Add(obj);
+                    _db.SaveChanges();
+                };
+            }
+            return res;
         }
-        
 
         [HttpGet("home/accessdenied")]
         public IActionResult Denied()
@@ -46,8 +61,22 @@ namespace daBoot.Controllers
         }
 
         [Authorize]
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
+            // checks for OAuth, adding accounts to DB after redirected back from provider
+            var username = User.Claims.FirstOrDefault(c => c.Type == "username").Value;
+            var name = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value;
+            var nameparts = name.Split(' ', 2);
+            var firstname = nameparts[0];
+            var lastname = nameparts[1];
+            var email = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email).Value;
+            Account user = await _db.Users.FirstOrDefaultAsync(u => u.Username == username);
+            if (user is null)
+            {
+                var obj = new Account(username, firstname, lastname, email); 
+                _db.Users.Add(obj);
+                _db.SaveChanges();
+            };
             return View();
         }
 
