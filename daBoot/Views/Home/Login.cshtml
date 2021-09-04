@@ -126,6 +126,9 @@
                     <input type="submit" class="btn btn-success" value="Login" />
                 </div>
             </form>
+            <form method="get" action="/oauth/github?ReturnUrl=@System.Net.WebUtility.UrlEncode(returnUrl)">
+                <button type="submit" class="btn btn-secondary">Sign in with GitHub</button>
+            </form>
             <button class="btn btn-primary" onclick="flip()">Create my account</button>
         </div>
 

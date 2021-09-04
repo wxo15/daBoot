@@ -26,7 +26,18 @@ namespace daBoot.Controllers
             _logger = logger;
             _db = db;
         }
-
+        
+        [HttpGet("oauth/{provider}")]
+        public IActionResult OAuthLogin([FromRoute] string provider, [FromQuery] string returnUrl = "/")
+        {
+            if (User != null && User.Identities.Any(identity => identity.IsAuthenticated))
+            {
+                RedirectToAction("", "Home");
+            }
+            returnUrl = string.IsNullOrEmpty(returnUrl) ? "/" : returnUrl;
+            return new ChallengeResult(provider, new AuthenticationProperties() { RedirectUri = returnUrl });
+        }
+        
 
         [HttpGet("home/accessdenied")]
         public IActionResult Denied()
