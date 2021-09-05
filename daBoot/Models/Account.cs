@@ -18,25 +18,41 @@ namespace daBoot.Models
         public string LastName { get; set; }
         [Required]
         public string EmailAddress { get; set; }
-        //public string ProfilePic { get; set; }
+        [Required]
+        public string ProfilePicURL { get; set; }
 
         /* Username + password constructor*/
-        public Account(string username, string password, string firstName, string lastName, string emailAddress)
+        public Account(string username, string password, string firstName, string lastName, string emailAddress, string profpic)
         {
             Username = username;
             Password = password;
             FirstName = firstName;
             LastName = lastName;
             EmailAddress = emailAddress;
+            if (profpic is null || profpic == "")
+            {
+                profpic = "https://github.com/wxo15/daBoot/blob/main/default-avatar.png?raw=true";
+            }
+            ProfilePicURL = profpic;
         }
 
         /* OAuth constructor*/
-        public Account(string username, string firstName, string lastName, string emailAddress)
+        public Account(string username, string firstName, string lastName, string emailAddress, string profpic)
         {
             Username = username;
             FirstName = firstName;
             LastName = lastName;
             EmailAddress = emailAddress;
+            if (profpic is null || profpic == "")
+            {
+                profpic = "https://github.com/wxo15/daBoot/blob/main/default-avatar.png?raw=true";
+            }
+            ProfilePicURL = profpic;
+        }
+
+        //Empty constructor
+        public Account()
+        {
         }
     }
 }

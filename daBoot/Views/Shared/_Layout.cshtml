@@ -12,9 +12,11 @@
 <body>
     <div id="mySidebar" class="sidebar">
         <a href="javascript:void(0)" id="sidebarclose" class="closebtn" onclick="closeNav()"><i class="fa fa-arrow-left"></i></a>
-        <div class="text-light" style="height:40vh;">
+        <div class="text-light" style="height:40vh; text-align:center">
             @if (User.Identity.IsAuthenticated){
                 <h3>Welcome, @User.Identity.Name</h3>
+                <img src=@User.Claims.FirstOrDefault(c => c.Type == "profpic").Value
+                     alt="profile pic" style="object-fit: cover; width: 20vh; height: 20vh; overflow: hidden; border-radius:10vh; background-color:white">
             }
         </div>
         <div class="border-top" style="list-style-type: none; padding: 0; margin: 0; height:50vh;">

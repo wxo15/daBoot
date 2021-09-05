@@ -50,7 +50,8 @@ namespace daBoot.Controllers
                 var name = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value;
                 var nameparts = name.Split(' ', 2);
                 var email = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email).Value;
-                var obj = new Account(username, nameparts[0], nameparts[1], email);
+                var profpic = User.Claims.FirstOrDefault(c => c.Type == "profpic").Value;
+                var obj = new Account(username, nameparts[0], nameparts[1], email, profpic);
                 Account user = await _db.Users.FirstOrDefaultAsync(u => u.Username == username);
                 if (user == null)
                 {
@@ -129,6 +130,7 @@ namespace daBoot.Controllers
             claims.Add(new Claim("username", username));
             claims.Add(new Claim(ClaimTypes.NameIdentifier, username));
             claims.Add(new Claim(ClaimTypes.Name, user.FirstName + " " + user.LastName));
+            claims.Add(new Claim("profpic", user.ProfilePicURL));
             var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
             var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
             await HttpContext.SignInAsync(claimsPrincipal);
@@ -166,7 +168,7 @@ namespace daBoot.Controllers
             var salt = Convert.ToBase64String(algorithm.Salt);
             string str = $"{IterationNum}.{KeySize}.{SaltSize}.{salt}.{key}";
 
-            var obj = new Account(username, str, firstname, lastname, email);
+            var obj = new Account(username, str, firstname, lastname, email, "");
             _db.Users.Add(obj);
             _db.SaveChanges();
 

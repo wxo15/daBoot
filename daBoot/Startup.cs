@@ -85,7 +85,7 @@ namespace daBoot
                             var name = context.Identity.Claims.FirstOrDefault(c => c.Type == "urn:github:name").Value;
                             var url = context.Identity.Claims.FirstOrDefault(c => c.Type == "urn:github:url").Value;
                             var email = context.Identity.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email).Value;
-                            var avatar = json.RootElement.GetProperty("avatar_url");
+                            var avatar = json.RootElement.GetProperty("avatar_url").ToString();
                             var nameparts = name.Split(' ', 2);
                             context.Identity.RemoveClaim(context.Identity.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier));
                             context.Identity.RemoveClaim(context.Identity.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name));
@@ -107,7 +107,7 @@ namespace daBoot
                             context.Identity.AddClaim(new Claim(ClaimTypes.NameIdentifier, username));
                             context.Identity.AddClaim(new Claim(ClaimTypes.Name, name));
                             context.Identity.AddClaim(new Claim(ClaimTypes.Email, email));
-
+                            context.Identity.AddClaim(new Claim("profpic", avatar));
                         }
                     };
                 });
