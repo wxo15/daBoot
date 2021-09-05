@@ -59,7 +59,7 @@ namespace daBoot.Controllers
                     _db.SaveChanges();
                 };
             };
-            return Redirect("~/Home/Index");
+            return Redirect("~/");
         }
 
                     

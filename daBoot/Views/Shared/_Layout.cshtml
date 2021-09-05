@@ -13,17 +13,22 @@
     <div id="mySidebar" class="sidebar">
         <a href="javascript:void(0)" id="sidebarclose" class="closebtn" onclick="closeNav()"><i class="fa fa-arrow-left"></i></a>
         <div class="text-light" style="height:40vh; text-align:center">
-            @if (User.Identity.IsAuthenticated){
+            @if (User.Identity.IsAuthenticated)
+            {
                 <h3>Welcome, @User.Identity.Name</h3>
                 <img src=@User.Claims.FirstOrDefault(c => c.Type == "profpic").Value
                      alt="profile pic" style="object-fit: cover; width: 20vh; height: 20vh; overflow: hidden; border-radius:10vh; background-color:white">
+            }
+            else
+            {
+                <h3>You are not logged in.</h3>
             }
         </div>
         <div class="border-top" style="list-style-type: none; padding: 0; margin: 0; height:50vh;">
             @if (User.Identity.IsAuthenticated){
                 <a class="nav-link text-light sidebar-item" style="width:100%;">Dashboard</a>
                 <a class="nav-link text-light sidebar-item" style="width:100%;">Projects & Roles</a>
-                <a class="nav-link text-light sidebar-item" style="width:100%;">Your Profile</a>
+                <a class="nav-link text-light sidebar-item" style="width:100%;" asp-controller="Profile" asp-action="Index">Your Profile</a>
                 <a class="nav-link text-light sidebar-item" style="width:100%;">Team Members</a>
                 <div class="row notification">
                     <a class="nav-link text-light sidebar-item" style="width:100%;">Notifications</a>
@@ -44,15 +49,15 @@
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Item" asp-action="Index">My Borrowed Items</a>
-                        </li>
-                    </ul>
-                    
+                    <!--<ul class="navbar-nav flex-grow-1">
+        <li class="nav-item">
+            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link text-dark" asp-area="" asp-controller="Item" asp-action="Index">My Borrowed Items</a>
+        </li>
+    </ul>-->
+
                     <form>
                         <div class="search-container input-group">
                             <input type="search" class="form-control" placeholder="Search..." name="search" id="searchform">

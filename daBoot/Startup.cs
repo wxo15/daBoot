@@ -58,17 +58,11 @@ namespace daBoot
                     options.AuthorizationEndpoint = "https://github.com/login/oauth/authorize?prompt=consent";
                     options.TokenEndpoint = "https://github.com/login/oauth/access_token";
                     options.UserInformationEndpoint = "https://api.github.com/user";
+                    options.AccessDeniedPath = "/";
                     options.SaveTokens = true;
                     options.Scope.Clear();
                     options.Scope.Add("read:user");
                     options.Scope.Add("user:email");
-                    /*options.ClaimActions.MapJsonKey(ClaimTypes.NameIdentifier, "id");
-                    options.ClaimActions.MapJsonKey("username", "login");
-                    options.ClaimActions.MapJsonKey(ClaimTypes.NameIdentifier, "login");
-                    options.ClaimActions.MapJsonKey(ClaimTypes.Name, "name");
-                    options.ClaimActions.MapJsonKey("urn:github:login", "login");
-                    options.ClaimActions.MapJsonKey("urn:github:url", "html_url");
-                    options.ClaimActions.MapJsonKey("urn:github:avatar", "avatar_url");*/
                     options.Events = new OAuthEvents
                     {
                         OnCreatingTicket = async context =>
@@ -79,7 +73,6 @@ namespace daBoot
                             var response = await context.Backchannel.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, context.HttpContext.RequestAborted);
                             response.EnsureSuccessStatusCode();
                             var json = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
-                            /*context.RunClaimActions(json.RootElement);*/
                             var id = context.Identity.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value;
                             var username = "(GH)" + context.Identity.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value;
                             var name = context.Identity.Claims.FirstOrDefault(c => c.Type == "urn:github:name").Value;
@@ -92,17 +85,6 @@ namespace daBoot
                             context.Identity.RemoveClaim(context.Identity.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email));
                             context.Identity.RemoveClaim(context.Identity.Claims.FirstOrDefault(c => c.Type == "urn:github:name"));
                             context.Identity.RemoveClaim(context.Identity.Claims.FirstOrDefault(c => c.Type == "urn:github:url"));
-                            /*var obj1 = new Account(username, nameparts[0], nameparts[1], email);
-                            var jsonacc = JsonConvert.SerializeObject(obj1);*/
-                            /*var obj = new { "username": username,
-                                        "firstname": nameparts[0],
-                                        "lastname": nameparts[1],
-                                        "email": email  };*/
-                            /*var content = new StringContent(jsonacc, Encoding.UTF8, "application/json");
-                            HttpClient client = new HttpClient();
-                            client.BaseAddress = new Uri("http://localhost:44352");
-                            using var httpResponse = await client.PostAsync("/oauth", content);
-                            httpResponse.EnsureSuccessStatusCode();*/
                             context.Identity.AddClaim(new Claim("username", username));
                             context.Identity.AddClaim(new Claim(ClaimTypes.NameIdentifier, username));
                             context.Identity.AddClaim(new Claim(ClaimTypes.Name, name));
@@ -135,6 +117,10 @@ namespace daBoot
 
             app.UseEndpoints(endpoints =>
             {
+                /*endpoints.MapControllerRoute(
+                    name: "profile",
+                    pattern: "profile/{username?}",
+                    defaults: new { controller = "Profile", action = "Index" }); */
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
