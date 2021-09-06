@@ -16,5 +16,21 @@ namespace daBoot.Data
 
         public DbSet<Item> Items{ get; set; }
         public DbSet<Account> Users { get; set; }
+        public DbSet<Relation> Relations { get; set; }
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Relation>()
+                        .HasKey(k => new { k.UserId, k.TeamMemberId });
+
+            modelBuilder.Entity<Relation>()
+                        .HasOne(e => e.User)
+                        .WithMany(e => e.OthersTeamMember)
+                        .HasForeignKey(e => e.UserId);
+
+            modelBuilder.Entity<Relation>()
+                        .HasOne(e => e.TeamMember)
+                        .WithMany(e => e.TeamMembers)
+                        .HasForeignKey(e => e.TeamMemberId);
+        }
     }
 }

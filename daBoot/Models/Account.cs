@@ -20,6 +20,10 @@ namespace daBoot.Models
         public string EmailAddress { get; set; }
         [Required]
         public string ProfilePicURL { get; set; }
+        public virtual ICollection<Relation> TeamMembers { get; set; }
+        public virtual ICollection<Relation> OthersTeamMember { get; set; }
+
+
 
         /* Username + password constructor*/
         public Account(string username, string password, string firstName, string lastName, string emailAddress, string profpic)
@@ -54,5 +58,14 @@ namespace daBoot.Models
         public Account()
         {
         }
+    }
+
+    public class Relation
+    {
+        public int UserId { get; set; }
+        public int TeamMemberId { get; set; }
+
+        public virtual Account User { get; set; }
+        public virtual Account TeamMember { get; set; }
     }
 }

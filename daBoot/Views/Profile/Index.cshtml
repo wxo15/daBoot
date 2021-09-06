@@ -61,6 +61,26 @@
                     </div>
                 }
             </form>
+            @if (User.Identity.IsAuthenticated && User.Claims.FirstOrDefault(c => c.Type == "username").Value != Model.Username)
+            {
+                @if (ViewData["IsFriend"] == null)
+                {
+                    <form action="/addteammember?userid=@Model.Id" method="post" style="text-align:center; width:100%; margin:auto">
+                        <div class="input-group mb-3">
+                            <input type="submit" class="btn btn-success" value="Add as Team Member" />
+                        </div>
+                    </form>
+                }
+                else
+                {
+                    <form action="/rmvteammember?userid=@Model.Id" method="post" style="text-align:center; width:100%; margin:auto">
+                        <div class="input-group mb-3">
+                            <input type="submit" class="btn btn-secondary" value="Remove Team Member" />
+                        </div>
+                    </form>
+                }
+            }
+
         </div>
     }
     else
