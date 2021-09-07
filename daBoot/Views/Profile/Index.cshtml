@@ -1,5 +1,38 @@
 ﻿@model daBoot.Models.Account
 
+<script>
+    function addteammember(userid) {
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", "/addteammember/"+userid, true);
+        xhr.onreadystatechange = function () {
+            if (this.readyState != 4) return;
+
+            if (this.status == 200) {
+                if (this.responseText == "Success") {
+                    document.location.reload(true);
+                }
+            }
+            // end of state change: it can be after some time (async)
+        };
+        xhr.send();
+    }
+
+    function rmvteammember(userid) {
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", "/rmvteammember/" + userid, true);
+        xhr.onreadystatechange = function () {
+            if (this.readyState != 4) return;
+
+            if (this.status == 200) {
+                if (this.responseText == "Success") {
+                    document.location.reload(true);
+                }
+            }
+            // end of state change: it can be after some time (async)
+        };
+        xhr.send();
+    }
+</script>
 
 <div class="container p-3">
     @if (Model != null){
@@ -65,19 +98,16 @@
             {
                 @if (ViewData["IsFriend"] == null)
                 {
-                    <form action="/addteammember?userid=@Model.Id" method="post" style="text-align:center; width:100%; margin:auto">
-                        <div class="input-group mb-3">
-                            <input type="submit" class="btn btn-success" value="Add as Team Member" />
-                        </div>
-                    </form>
+                    <div class="input-group mb-3">
+                        <input type="submit" onclick="addteammember(@Model.Id)" class="btn btn-success" value="Add as Team Member" />
+                    </div>
+                    
                 }
                 else
                 {
-                    <form action="/rmvteammember?userid=@Model.Id" method="post" style="text-align:center; width:100%; margin:auto">
-                        <div class="input-group mb-3">
-                            <input type="submit" class="btn btn-secondary" value="Remove Team Member" />
-                        </div>
-                    </form>
+                    <div class="input-group mb-3">
+                        <input type="submit" onclick="rmvteammember(@Model.Id)" class="btn btn-secondary" value="Remove Team Member" />
+                    </div>
                 }
             }
 

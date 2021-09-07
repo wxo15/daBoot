@@ -41,8 +41,8 @@ namespace daBoot.Controllers
             return View(user);
         }
 
-        [HttpPost("addteammember")]
-        public async Task<IActionResult> AddTeamMember(int userid)
+        [HttpPost("addteammember/{userid}")]
+        public async Task<string> AddTeamMember(int userid)
         {
             if (User.Identity.IsAuthenticated && _db.Users.Find(userid) != null)
             {
@@ -50,12 +50,13 @@ namespace daBoot.Controllers
                 var user = await _db.Users.FirstOrDefaultAsync(u => u.Username == username);
                 _db.Relations.Add(new Models.Relation {UserId = user.Id, TeamMemberId = userid });
                 _db.SaveChanges();
+                return "Success";
             }
-            return Redirect("~/profile/" + _db.Users.Find(userid).Username);
+            return "Failed";
         }
 
-        [HttpPost("rmvteammember")]
-        public async Task<IActionResult> RemoveTeamMember(int userid)
+        [HttpPost("rmvteammember/{userid}")]
+        public async Task<string> RemoveTeamMember(int userid)
         {
             if (User.Identity.IsAuthenticated && _db.Users.Find(userid) != null)
             {
@@ -63,8 +64,9 @@ namespace daBoot.Controllers
                 var user = await _db.Users.FirstOrDefaultAsync(u => u.Username == username);
                 _db.Relations.Remove(new Models.Relation { UserId = user.Id, TeamMemberId = userid });
                 _db.SaveChanges();
+                return "Success";
             }
-            return Redirect("~/profile/" + _db.Users.Find(userid).Username);
+            return "Failed";
         }
 
     }
