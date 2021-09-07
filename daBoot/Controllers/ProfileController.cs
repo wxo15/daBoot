@@ -1,10 +1,14 @@
 ﻿using daBoot.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication;
 
 namespace daBoot.Controllers
 {
@@ -69,5 +73,35 @@ namespace daBoot.Controllers
             return "Failed";
         }
 
+        [HttpPost("profile/update")]
+        public async Task<IActionResult> RemoveTeamMember(int id, string firstname, string lastname, string email, string profpic)
+        {
+            if (id == 0 || firstname == null || lastname == null || email == null || profpic == null)
+            {
+                return Redirect("/profile");
+            }
+            var existinguser = _db.Users.Find(id);
+            if (User.Identity.IsAuthenticated && existinguser != null)
+            {
+                if (existinguser.Username == User.Claims.FirstOrDefault(c => c.Type == "username").Value)
+                {
+                    existinguser.FirstName = firstname;
+                    existinguser.LastName = lastname;
+                    existinguser.EmailAddress = email;
+                    existinguser.ProfilePicURL = profpic;
+                    _db.Update(existinguser);
+                    _db.SaveChanges();
+                    // Change existing claim and resign-in
+                    var Identity = User.Identity as ClaimsIdentity;
+                    Identity.RemoveClaim(Identity.FindFirst(ClaimTypes.Name));
+                    Identity.RemoveClaim(Identity.FindFirst("profpic"));
+                    Identity.AddClaim(new Claim(ClaimTypes.Name, firstname + " " + lastname));
+                    Identity.AddClaim(new Claim("profpic", profpic));
+                    var claimsPrincipal = new ClaimsPrincipal(Identity);
+                    await HttpContext.SignInAsync(claimsPrincipal);
+                }
+            }
+            return Redirect("/profile");
+        }
     }
 }

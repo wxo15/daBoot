@@ -15,7 +15,7 @@
         <div class="text-light" style="height:40vh; text-align:center">
             @if (User.Identity.IsAuthenticated)
             {
-                <h3>Welcome, @User.Identity.Name</h3>
+            <h3>Welcome, @User.Claims.FirstOrDefault(c => c.Type == System.Security.Claims.ClaimTypes.Name).Value</h3>
                 <img src=@User.Claims.FirstOrDefault(c => c.Type == "profpic").Value
                      alt="profile pic" style="object-fit: cover; width: 20vh; height: 20vh; overflow: hidden; border-radius:10vh; background-color:white">
             }

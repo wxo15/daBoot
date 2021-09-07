@@ -40,17 +40,17 @@
             <img class="center" src=@Model.ProfilePicURL alt="profile pic" style="object-fit: cover; width: 30vh; height: 30vh; overflow: hidden; border-radius: 15vh; background-color: white; display: block; margin-left: auto; margin-right: auto;">
         </div>
         <div class="row col-6 offset-3">
-            <form action="/" method="get" style="text-align:center; width:100%; margin:auto">
+            <form action="/profile/update/" method="post" style="text-align:center; width:100%; margin:auto">
                 <small class="form-text">ID</small>
                 <div class="input-group mb-3">
-                    <input type="text" class="form-control" value=@Model.Id disabled />
+                    <input type="text" class="form-control" id="id" name="id" value=@Model.Id readonly="readonly" />
                 </div>
                 <small class="form-text">Username</small>
                 <div class="input-group mb-3">
                     <div class="input-group-prepend">
                         <span class="input-group-text" id="basic-addon1">@@</span>
                     </div>
-                    <input type="text" class="form-control" id="username" name="username" value=@Model.Username aria-label="Username" aria-describedby="basic-addon1" disabled />
+                    <input type="text" class="form-control" id="username" name="username" value=@Model.Username aria-label="Username" aria-describedby="basic-addon1" readonly="readonly" />
                 </div>
                 @if (User.Identity.IsAuthenticated && User.Claims.FirstOrDefault(c => c.Type == "username").Value == Model.Username)
                 {
@@ -78,19 +78,19 @@
                 {
                     <small class="form-text">First Name</small>
                     <div class="input-group mb-3">
-                        <input type="text" id="firstname" name="firstname" class="form-control" value=@Model.FirstName disabled />
+                        <input type="text" id="firstname" name="firstname" class="form-control" value=@Model.FirstName readonly="readonly" />
                     </div>
                     <small class="form-text">Last Name</small>
                     <div class="input-group mb-3">
-                        <input type="text" id="lastname" name="lastname" class="form-control" value=@Model.LastName disabled />
+                        <input type="text" id="lastname" name="lastname" class="form-control" value=string(@Model.LastName) readonly="readonly" />
                     </div>
                     <small class="form-text">Email Address</small>
                     <div class="input-group mb-3">
-                        <input type="text" id="email" name="email" class="form-control" value=@Model.EmailAddress disabled />
+                        <input type="text" id="email" name="email" class="form-control" value=@Model.EmailAddress readonly="readonly" />
                     </div>
                     <small class="form-text">Profile Picture URL</small>
                     <div class="input-group mb-3">
-                        <input type="text" id="profpic" name="profpic" class="form-control" value=@Model.ProfilePicURL disabled />
+                        <input type="text" id="profpic" name="profpic" class="form-control" value=@Model.ProfilePicURL readonly="readonly" />
                     </div>
                 }
             </form>

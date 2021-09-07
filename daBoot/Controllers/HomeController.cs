@@ -53,6 +53,13 @@ namespace daBoot.Controllers
                 var profpic = User.Claims.FirstOrDefault(c => c.Type == "profpic").Value;
                 var obj = new Account(username, nameparts[0], nameparts[1], email, profpic);
                 Account user = await _db.Users.FirstOrDefaultAsync(u => u.Username == username);
+
+                // Remove email as not needed
+                var Identity = User.Identity as ClaimsIdentity;
+                Identity.RemoveClaim(Identity.FindFirst(ClaimTypes.Email));
+                var claimsPrincipal = new ClaimsPrincipal(Identity);
+                await HttpContext.SignInAsync(claimsPrincipal);
+
                 if (user == null)
                 {
                     _db.Users.Add(obj);
