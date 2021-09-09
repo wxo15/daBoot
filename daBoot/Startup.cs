@@ -80,6 +80,12 @@ namespace daBoot
                             var email = context.Identity.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email).Value;
                             var avatar = json.RootElement.GetProperty("avatar_url").ToString();
                             var nameparts = name.Split(' ', 2);
+                            if (nameparts.Length == 2) {
+                                name = nameparts[0] + " " + nameparts[1].Replace(" ", "");
+                            } else
+                            {
+                                name = nameparts[0];
+                            }
                             context.Identity.RemoveClaim(context.Identity.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier));
                             context.Identity.RemoveClaim(context.Identity.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name));
                             context.Identity.RemoveClaim(context.Identity.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email));

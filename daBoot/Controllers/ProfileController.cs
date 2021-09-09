@@ -9,6 +9,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication;
+using daBoot.Models;
 
 namespace daBoot.Controllers
 {
@@ -44,6 +45,21 @@ namespace daBoot.Controllers
             }
             return View(user);
         }
+
+        [HttpGet("myteammember")]
+        public async Task<IActionResult> TeamMemberList()
+        {
+            IEnumerable<Account> objList = null;
+            if (User.Identity.IsAuthenticated)
+            {
+                var ownusername = User.Claims.FirstOrDefault(c => c.Type == "username").Value;
+                var own = await _db.Users.FirstOrDefaultAsync(u => u.Username == ownusername);
+                IEnumerable<int> idlist = _db.Relations.Where(u => u.UserId == own.Id).Select(u => u.TeamMemberId);
+                objList = _db.Users.Where(u => idlist.Contains(u.Id));
+            }
+            return View(objList);
+        }
+
 
         [HttpPost("addteammember/{userid}")]
         public async Task<string> AddTeamMember(int userid)

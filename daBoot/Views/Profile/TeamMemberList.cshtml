@@ -1,0 +1,53 @@
+﻿@model IEnumerable<Account>
+
+<script>
+    function rmvteammember(userid) {
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", "/rmvteammember/" + userid, true);
+        xhr.onreadystatechange = function () {
+            if (this.readyState != 4) return;
+
+            if (this.status == 200) {
+                if (this.responseText == "Success") {
+                    document.location.reload(true);
+                }
+            }
+            // end of state change: it can be after some time (async)
+        };
+        xhr.send();
+    }
+</script>
+
+
+<div class="container p-3">
+    <div class="text-center">
+        <h1 class="display-4">Your Team Members</h1>
+    </div>
+
+    @if (Model.Count() > 0)
+    {
+        <table class="table table-bordered table-striped" style="width:100%">
+            <tbody>
+                @foreach (var member in Model)
+                {
+                    <tr>
+                        <td width="10%" style="vertical-align:middle;">
+                            <img class="center" src=@member.ProfilePicURL alt="profile pic" style="object-fit: cover; width: 100%; overflow: hidden; border-radius: 15vh; background-color: white; display: block; margin-left: auto; margin-right: auto;">
+                        </td>
+                        <td width="80%" style="vertical-align:middle;">
+                            <h3><a href="/profile/@member.Username">@member.FirstName @member.LastName</a></h3>
+                            <p class="text-muted">@@@member.Username</p>
+                        </td>
+                        <td width="10%" style="vertical-align:middle;">
+                            <button onclick="rmvteammember(@member.Id)" class="btn btn-secondary">-</button>
+                        </td>
+                    </tr>
+                }
+                </tbody>
+                </table>
+            }
+            else
+            {
+                <p>You don't have any team member.</p>
+            }
+    </div>
