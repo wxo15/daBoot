@@ -38,10 +38,10 @@ namespace daBoot.Controllers
             {
                 var ownusername = User.Claims.FirstOrDefault(c => c.Type == "username").Value;
                 var own = await _db.Users.FirstOrDefaultAsync(u => u.Username == ownusername);
-                ViewData["IsFriend"] = _db.Relations.Find(own.Id, user.Id);
+                ViewData["IsMember"] = _db.Relations.Find(own.Id, user.Id);
             } else
             {
-                ViewData["IsFriend"] = null;
+                ViewData["IsMember"] = null;
             }
             return View(user);
         }
@@ -55,7 +55,7 @@ namespace daBoot.Controllers
                 var ownusername = User.Claims.FirstOrDefault(c => c.Type == "username").Value;
                 var own = await _db.Users.FirstOrDefaultAsync(u => u.Username == ownusername);
                 IEnumerable<int> idlist = _db.Relations.Where(u => u.UserId == own.Id).Select(u => u.TeamMemberId);
-                objList = _db.Users.Where(u => idlist.Contains(u.Id));
+                objList = _db.Users.Where(u => idlist.Contains(u.Id)).OrderBy(u => u.FirstName + " " + u.LastName);
             }
             return View(objList);
         }
@@ -119,5 +119,27 @@ namespace daBoot.Controllers
             }
             return Redirect("/profile");
         }
+
+        [HttpGet("search/")]
+        public IActionResult SearchResult(string searchstr)
+        {
+            var searchTerms = searchstr.Split();
+            IEnumerable<Account> objList = null;
+            if (searchTerms.Length == 2)
+            {
+                objList = _db.Users.Where(u => u.FirstName.Contains(searchTerms[0]) &&
+                                        u.LastName.Contains(searchTerms[1]));
+            }
+            else
+            {
+                objList = _db.Users.Where(u => u.FirstName.Contains(searchTerms[0]) ||
+                                        u.LastName.Contains(searchTerms[0]) ||
+                                        u.Username.Contains(searchTerms[0]));
+            }
+            // .Where(u => (u.FirstName + " " + u.LastName).Contains(searchstr) || ("@" + u.Username).Contains(searchstr))
+            // IEnumerable<Account> objList = _db.Users.Where(u => (u.FirstName.ToString() + " ".ToString() + u.LastName.ToString()).Contains(searchstr));
+            return View(objList);
+        }
+
     }
 }

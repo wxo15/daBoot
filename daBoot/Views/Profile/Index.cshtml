@@ -96,7 +96,7 @@
             </form>
             @if (User.Identity.IsAuthenticated && User.Claims.FirstOrDefault(c => c.Type == "username").Value != Model.Username)
             {
-                @if (ViewData["IsFriend"] == null)
+                @if (ViewData["IsMember"] == null)
                 {
                     <div class="input-group mb-3">
                         <input type="submit" onclick="addteammember(@Model.Id)" class="btn btn-success" value="Add as Team Member" />
