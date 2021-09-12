@@ -40,6 +40,23 @@
             xhr.send();
         }
     }
+
+    function invite() {
+        var userid = document.getElementById("popupSelect").value;
+        if (userid != null) {
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", "/project/" + @Model.Id + "/invite/" + userid, true);
+            xhr.onreadystatechange = function () {
+                if (this.readyState != 4) return;
+                if (this.status == 200) {
+                    if (this.responseText == "Success") {
+                        document.location.reload(true);
+                    }
+                }
+            };
+            xhr.send();
+        }
+    }
 </script>
 
 <div class="container p-3">
@@ -47,9 +64,19 @@
     {
     <div style="display: flex;">
         <div style="display: flex; flex-direction: column; flex: 1;">
-            <h1 class="row">@Model.Name</h1>
-            <p class="row">ID: @Model.Id</p>
-            <p class="row">Your role: @ViewData["UserRole"]</p>
+            <h1 style="display: flex; flex-wrap: wrap;">@Model.Name</h1>
+            <p style="display: flex; flex-wrap: wrap;">ID: @Model.Id</p>
+            <p style="display: flex; flex-wrap: wrap;">Your role: @ViewData["UserRole"]</p>
+            <button title="invite" class="btn btn-primary m-4" onclick=" $('#invitepopup').show();">Invite your team member</button>
+            <div id="invitepopup" style="display: none;">
+                <select class="form-select" id="popupSelect" title="selection" onchange="invite()">
+                    <option selected>Select your team member</option>
+                    @foreach (var teammember in (IEnumerable<Account>)ViewData["YourTeamMembers"])
+                    {
+                        <option value=@teammember.Id>@teammember.FirstName @teammember.LastName (@@@teammember.Username)</option>
+                    }
+                </select>
+            </div>
         </div>
         <div style="display: flex; flex-direction: column; flex: 1;">
             <h3>Lead:</h3>

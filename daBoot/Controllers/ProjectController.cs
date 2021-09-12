@@ -49,7 +49,7 @@ namespace daBoot.Controllers
             if (User.Identity.IsAuthenticated)
             {
                 var ownusername = User.Claims.FirstOrDefault(c => c.Type == "username").Value;
-                var own = await _db.Users.FirstOrDefaultAsync(u => u.Username == ownusername);
+                var own = await _db.Users.Include("TeamMembers").FirstOrDefaultAsync(u => u.Username == ownusername);
                 if ((from upr in _db.UserProjects
                      join account in _db.Users on upr.UserId equals account.Id
                      join proj in _db.Projects on upr.ProjectId equals proj.Id
@@ -68,6 +68,8 @@ namespace daBoot.Controllers
                                            join role in _db.Roles on upr.RoleId equals role.Id
                                            where account == own && proj.Id == projectid
                                            select role.RoleName).FirstOrDefault().ToString();
+                    IEnumerable<int> idlist = _db.Relations.Where(u => u.UserId == own.Id).Select(u => u.TeamMemberId);
+                    ViewData["YourTeamMembers"] = _db.Users.Where(u => idlist.Contains(u.Id)).OrderBy(u => u.FirstName + " " + u.LastName);
                 }
             }
             return View(project);
@@ -81,7 +83,7 @@ namespace daBoot.Controllers
                 var ownusername = User.Claims.FirstOrDefault(c => c.Type == "username").Value;
                 var own = await _db.Users.FirstOrDefaultAsync(u => u.Username == ownusername);
                 var target = _db.Users.Find(userid);
-                // make sure both own and target users have
+                // make sure both own and target users have a role in this project
                 if ((from upr in _db.UserProjects
                      join account in _db.Users on upr.UserId equals account.Id
                      join proj in _db.Projects on upr.ProjectId equals proj.Id
@@ -114,7 +116,7 @@ namespace daBoot.Controllers
                 var ownusername = User.Claims.FirstOrDefault(c => c.Type == "username").Value;
                 var own = await _db.Users.FirstOrDefaultAsync(u => u.Username == ownusername);
                 var target = _db.Users.Find(userid);
-                // make sure both own and target users have
+                // make sure both own and target users have a role in this project
                 if ((from upr in _db.UserProjects
                      join account in _db.Users on upr.UserId equals account.Id
                      join proj in _db.Projects on upr.ProjectId equals proj.Id
@@ -131,6 +133,34 @@ namespace daBoot.Controllers
                     {
                         targetrole.RoleId += 1;
                     }
+                    _db.SaveChanges();
+                    return "Success";
+                }
+            }
+            return "Failed";
+        }
+
+        [HttpPost("project/{projectid}/invite/{userid}")]
+        public async Task<string> Invite(int projectid, int userid)
+        {
+            if (User.Identity.IsAuthenticated)
+            {
+                var ownusername = User.Claims.FirstOrDefault(c => c.Type == "username").Value;
+                var own = await _db.Users.FirstOrDefaultAsync(u => u.Username == ownusername);
+                var target = _db.Users.Find(userid);
+                // make sure both own and target users have a role in this project
+                if (target != null && (from upr in _db.UserProjects
+                     join account in _db.Users on upr.UserId equals account.Id
+                     join proj in _db.Projects on upr.ProjectId equals proj.Id
+                     where account == own && proj.Id == projectid
+                     select proj).Count() == 1 && (from upr in _db.UserProjects
+                                                   join account in _db.Users on upr.UserId equals account.Id
+                                                   join proj in _db.Projects on upr.ProjectId equals proj.Id
+                                                   where account == target && proj.Id == projectid
+                                                   select proj).Count() == 0)
+                {
+                    var newUserProject = new UserProject { ProjectId = projectid, UserId = userid, RoleId = 3 };
+                    _db.UserProjects.Add(newUserProject);
                     _db.SaveChanges();
                     return "Success";
                 }
