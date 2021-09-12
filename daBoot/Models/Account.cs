@@ -22,6 +22,7 @@ namespace daBoot.Models
         public string ProfilePicURL { get; set; }
         public virtual ICollection<Relation> TeamMembers { get; set; }
         public virtual ICollection<Relation> OthersTeamMember { get; set; }
+        public virtual ICollection<UserProject> Projects { get; set; }
 
 
 

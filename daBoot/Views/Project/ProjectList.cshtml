@@ -1,0 +1,38 @@
+﻿@model IEnumerable<daBoot.Controllers.ProjectController.ProjectRole>
+
+<script>
+
+</script>
+
+
+<div class="container p-3">
+    <div class="text-center">
+        <h1 class="display-4">Your Projects</h1>
+    </div>
+
+    @if (Model.Count() > 0)
+    {
+        <table class="table table-bordered table-striped" style="width:100%">
+            <tbody>
+                @foreach (var project in Model)
+                {
+                    <tr>
+                        <td width="80%" style="vertical-align:middle;">
+                            <h3><a href="/project/@project.Project.Id">@project.Project.Name</a></h3>
+                        </td>
+                        <td width="10%" style="vertical-align:middle;">
+                            <p>@project.Role</p>
+                        </td>
+                        <td width="10%" style="vertical-align:middle;">
+                            <!--<button onclick="rmvteammember(@project.Project.Id)" class="btn btn-secondary">-</button>-->
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <p>You don't have any project.</p>
+    }
+</div>

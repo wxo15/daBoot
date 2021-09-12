@@ -1,0 +1,71 @@
+﻿@model daBoot.Models.Project
+
+<script>
+    function addteammember(userid) {
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", "/addteammember/"+userid, true);
+        xhr.onreadystatechange = function () {
+            if (this.readyState != 4) return;
+
+            if (this.status == 200) {
+                if (this.responseText == "Success") {
+                    document.location.reload(true);
+                }
+            }
+            // end of state change: it can be after some time (async)
+        };
+        xhr.send();
+    }
+
+    function rmvteammember(userid) {
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", "/rmvteammember/" + userid, true);
+        xhr.onreadystatechange = function () {
+            if (this.readyState != 4) return;
+
+            if (this.status == 200) {
+                if (this.responseText == "Success") {
+                    document.location.reload(true);
+                }
+            }
+            // end of state change: it can be after some time (async)
+        };
+        xhr.send();
+    }
+</script>
+
+<div class="container p-3">
+    @if (Model != null)
+    {
+        <div class="row col-6">
+            <h1>@Model.Name</h1>
+            <p>@Model.Id</p>
+        </div>
+        <div>
+            @if (Model.TeamMembers.Count() > 0) 
+            {  
+            <table class="table table-bordered table-striped" style="width:100%">
+                <tbody>
+                    @foreach (var member in @Model.TeamMembers)
+                    {
+                        <tr>
+                            <td width="10%" style="vertical-align:middle;">
+                                <img class="center" src=@member.User.ProfilePicURL alt="profile pic" style="object-fit: cover; width: 100%; overflow: hidden; border-radius: 15vh; background-color: white; display: block; margin-left: auto; margin-right: auto;">
+                            </td>
+                            <td width="80%" style="vertical-align:middle;">
+                                <h3><a href="/profile/@member.User.Username">@member.User.FirstName @member.User.LastName</a></h3>
+                                <p class="text-muted">@@@member.User.Username</p>
+                            </td>
+                            <td width="10%" style="vertical-align:middle;">@member.Role.RoleName</td>
+                        </tr>
+                    }
+                <tbody>
+            </table>
+            }
+        </div>
+    }
+    else
+    {
+        <h1>No project found, or you have no permission to view it.</h1>
+    }
+</div>

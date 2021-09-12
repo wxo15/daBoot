@@ -46,7 +46,7 @@ namespace daBoot.Controllers
             return View(user);
         }
 
-        [HttpGet("myteammember")]
+        [HttpGet("myteammembers")]
         public async Task<IActionResult> TeamMemberList()
         {
             IEnumerable<Account> objList = null;
@@ -121,11 +121,11 @@ namespace daBoot.Controllers
         }
 
         [HttpGet("search/")]
-        public IActionResult SearchResult(string searchstr)
+        public async Task<IActionResult> SearchResult(string searchstr)
         {
             var searchTerms = searchstr.Split();
-            IEnumerable<Account> objList = null;
-            if (searchTerms.Length == 2)
+            //IEnumerable<Account> objList = null;
+            /*if (searchTerms.Length == 2)
             {
                 objList = _db.Users.Where(u => u.FirstName.Contains(searchTerms[0]) &&
                                         u.LastName.Contains(searchTerms[1]));
@@ -135,10 +135,56 @@ namespace daBoot.Controllers
                 objList = _db.Users.Where(u => u.FirstName.Contains(searchTerms[0]) ||
                                         u.LastName.Contains(searchTerms[0]) ||
                                         u.Username.Contains(searchTerms[0]));
-            }
+            }*/
             // .Where(u => (u.FirstName + " " + u.LastName).Contains(searchstr) || ("@" + u.Username).Contains(searchstr))
-            // IEnumerable<Account> objList = _db.Users.Where(u => (u.FirstName.ToString() + " ".ToString() + u.LastName.ToString()).Contains(searchstr));
+            //objList = _db.Users.Where(u => (u.FirstName.ToString() + " ".ToString() + u.LastName.ToString()).Contains(searchstr));
+            /*objList = _db.Users.FromSqlRaw("SELECT * FROM Users u WHERE " +
+                "u.FirstName + ' ' + u.LastName LIKE " + searchstr +
+                " OR u.UserName LIKE " + searchstr);
+            */
+            //var objList = new IEnumerable<SearchItemResult> ;
+            IEnumerable<SearchItemResult> objList = null;
+            if (searchTerms.Length == 2)
+            {
+                objList = (from account in _db.Users
+                        where account.FirstName.Contains(searchTerms[0]) && account.LastName.Contains(searchTerms[1])
+                        select new SearchItemResult { Account = account, IsMember = false });
+                if (User.Identity.IsAuthenticated)
+                {
+                    var ownusername = User.Claims.FirstOrDefault(c => c.Type == "username").Value;
+                    var own = await _db.Users.FirstOrDefaultAsync(u => u.Username == ownusername);
+                    objList = (from account in _db.Users
+                               join relation in _db.Relations on new { a = own.Id, b = account.Id } equals new { a = relation.UserId, b = relation.TeamMemberId }
+                               into gj
+                               from sub in gj.DefaultIfEmpty()
+                               where account.FirstName.Contains(searchTerms[0]) && account.LastName.Contains(searchTerms[1]) && account != own
+                               select new SearchItemResult { Account = account, IsMember = sub.TeamMember.Username != null });
+                }
+            }
+            else
+            {
+                objList = (from account in _db.Users
+                        where account.FirstName.Contains(searchTerms[0]) || account.LastName.Contains(searchTerms[0])
+                        select new SearchItemResult { Account = account, IsMember = false });
+                if (User.Identity.IsAuthenticated)
+                {
+                    var ownusername = User.Claims.FirstOrDefault(c => c.Type == "username").Value;
+                    var own = await _db.Users.FirstOrDefaultAsync(u => u.Username == ownusername);
+                    objList = (from account in _db.Users
+                               join relation in _db.Relations on new { a = own.Id, b = account.Id } equals new { a = relation.UserId, b = relation.TeamMemberId }
+                               into gj
+                               from sub in gj.DefaultIfEmpty()
+                               where (account.FirstName.Contains(searchTerms[0]) || account.LastName.Contains(searchTerms[0]) || account.Username.Contains(searchTerms[0])) && account != own
+                               select new SearchItemResult { Account = account, IsMember = sub.TeamMember.Username != null });
+                }
+            }
             return View(objList);
+        }
+
+        public class SearchItemResult
+        {
+            public Account Account { get; set; }
+            public bool IsMember { get; set; }
         }
 
     }

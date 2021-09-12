@@ -17,6 +17,9 @@ namespace daBoot.Data
         public DbSet<Item> Items{ get; set; }
         public DbSet<Account> Users { get; set; }
         public DbSet<Relation> Relations { get; set; }
+        public DbSet<Project> Projects { get; set; }
+        public DbSet<UserProject> UserProjects { get; set; }
+        public DbSet<Role> Roles { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Relation>()
@@ -31,6 +34,25 @@ namespace daBoot.Data
                         .HasOne(e => e.TeamMember)
                         .WithMany(e => e.TeamMembers)
                         .HasForeignKey(e => e.TeamMemberId);
+
+            modelBuilder.Entity<UserProject>()
+                        .HasKey(k => new { k.UserId, k.ProjectId });
+
+            modelBuilder.Entity<UserProject>()
+                        .HasOne(e => e.User)
+                        .WithMany(e => e.Projects)
+                        .HasForeignKey(e => e.UserId);
+
+            modelBuilder.Entity<UserProject>()
+                        .HasOne(e => e.Project)
+                        .WithMany(e => e.TeamMembers)
+                        .HasForeignKey(e => e.ProjectId);
+
+            modelBuilder.Entity<UserProject>()
+                        .HasOne(e => e.Role)
+                        .WithMany(e => e.UserProject)
+                        .HasForeignKey(e => e.RoleId);
+
         }
     }
 }
