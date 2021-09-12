@@ -1,68 +1,116 @@
 ﻿@model daBoot.Models.Project
 
 <script>
-    function addteammember(userid) {
-        var xhr = new XMLHttpRequest();
-        xhr.open("POST", "/addteammember/"+userid, true);
-        xhr.onreadystatechange = function () {
-            if (this.readyState != 4) return;
-
-            if (this.status == 200) {
-                if (this.responseText == "Success") {
-                    document.location.reload(true);
+    function promote(userid, currrole) {
+        var response = true;
+        if (currrole == "Dev") {
+            response = confirm("This user is currently a dev. Promoting him will replace you as the lead, making you the dev. Are you sure?");
+        }
+        if (response == true) {
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", "/project/" + @Model.Id + "/promote/" + userid, true);
+            xhr.onreadystatechange = function () {
+                if (this.readyState != 4) return;
+                if (this.status == 200) {
+                    if (this.responseText == "Success") {
+                        document.location.reload(true);
+                    }
                 }
-            }
-            // end of state change: it can be after some time (async)
-        };
-        xhr.send();
+            };
+            xhr.send();
+        }
     }
 
-    function rmvteammember(userid) {
-        var xhr = new XMLHttpRequest();
-        xhr.open("POST", "/rmvteammember/" + userid, true);
-        xhr.onreadystatechange = function () {
-            if (this.readyState != 4) return;
-
-            if (this.status == 200) {
-                if (this.responseText == "Success") {
-                    document.location.reload(true);
+    function demote(userid, currrole) {
+        var response = true;
+        if (currrole == "Tester") {
+            response = confirm("This user is currently a tester. Demoting him will remove him from the project. Are you sure?");
+        }
+        if (response == true) {
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", "/project/" + @Model.Id + "/demote/" + userid, true);
+            xhr.onreadystatechange = function () {
+                if (this.readyState != 4) return;
+                if (this.status == 200) {
+                    if (this.responseText == "Success") {
+                        document.location.reload(true);
+                    }
                 }
-            }
-            // end of state change: it can be after some time (async)
-        };
-        xhr.send();
+            };
+            xhr.send();
+        }
     }
 </script>
 
 <div class="container p-3">
     @if (Model != null)
     {
-        <div class="row col-6">
-            <h1>@Model.Name</h1>
-            <p>@Model.Id</p>
+    <div style="display: flex;">
+        <div style="display: flex; flex-direction: column; flex: 1;">
+            <h1 class="row">@Model.Name</h1>
+            <p class="row">ID: @Model.Id</p>
+            <p class="row">Your role: @ViewData["UserRole"]</p>
         </div>
-        <div>
-            @if (Model.TeamMembers.Count() > 0) 
-            {  
+        <div style="display: flex; flex-direction: column; flex: 1;">
+            <h3>Lead:</h3>
             <table class="table table-bordered table-striped" style="width:100%">
                 <tbody>
-                    @foreach (var member in @Model.TeamMembers)
+                    @foreach (var member in @Model.TeamMembers.Where(m => m.Role.RoleName == "Lead"))
                     {
                         <tr>
-                            <td width="10%" style="vertical-align:middle;">
-                                <img class="center" src=@member.User.ProfilePicURL alt="profile pic" style="object-fit: cover; width: 100%; overflow: hidden; border-radius: 15vh; background-color: white; display: block; margin-left: auto; margin-right: auto;">
-                            </td>
                             <td width="80%" style="vertical-align:middle;">
-                                <h3><a href="/profile/@member.User.Username">@member.User.FirstName @member.User.LastName</a></h3>
+                                <strong><a href="/profile/@member.User.Username">@member.User.FirstName @member.User.LastName</a></strong>
                                 <p class="text-muted">@@@member.User.Username</p>
                             </td>
-                            <td width="10%" style="vertical-align:middle;">@member.Role.RoleName</td>
+                            <td width="20%" style="vertical-align:middle;"> </td>
                         </tr>
                     }
                 <tbody>
             </table>
-            }
+            <h3 class="mt-3">Dev:</h3>
+            <table class="table table-bordered table-striped" style="width:100%">
+                <tbody>
+                    @foreach (var member in @Model.TeamMembers.Where(m => m.Role.RoleName == "Dev"))
+                    {
+                        <tr>
+                            <td width="80%" style="vertical-align:middle;">
+                                <strong><a href="/profile/@member.User.Username">@member.User.FirstName @member.User.LastName</a></strong>
+                                <p class="text-muted">@@@member.User.Username</p>
+                            </td>
+                            @if (ViewData["UserRole"].ToString() == "Lead")
+                            {
+                                <td width="20%" style="vertical-align:middle;">
+                                    <button title="promote" class="btn btn-success" onclick="promote(@member.UserId, 'Dev')"><i class="icon-caret-up"></i></button>
+                                    <button title="demote" class="btn btn-danger" onclick="demote(@member.UserId, 'Dev')"><i class="icon-caret-down"></i></button>
+                                </td>
+                            }
+                        </tr>
+                    }
+                <tbody>
+            </table>
+            <h3 class="mt-3">Tester:</h3>
+            <table class="table table-bordered table-striped" style="width:100%">
+                <tbody>
+                    @foreach (var member in @Model.TeamMembers.Where(m => m.Role.RoleName == "Tester"))
+                    {
+                        <tr>
+                            <td width="80%" style="vertical-align:middle;">
+                                <strong><a href="/profile/@member.User.Username">@member.User.FirstName @member.User.LastName</a></strong>
+                                <p class="text-muted">@@@member.User.Username</p>
+                            </td>
+                            @if (ViewData["UserRole"].ToString() == "Lead" || ViewData["UserRole"].ToString() == "Dev")
+                            {
+                            <td width="20%" style="vertical-align:middle;">
+                                <button title="promote" class="btn btn-success" onclick="promote(@member.UserId, 'Tester')"><i class="icon-caret-up"></i></button>
+                                <button title="demote" class="btn btn-danger" onclick="demote(@member.UserId, 'Tester')"><i class="icon-caret-down"></i></button>
+                            </td>
+                            }
+                        </tr>
+                    }
+                <tbody>
+            </table>
         </div>
+    </div>
     }
     else
     {

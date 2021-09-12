@@ -54,7 +54,7 @@ namespace daBoot.Controllers
                      join account in _db.Users on upr.UserId equals account.Id
                      join proj in _db.Projects on upr.ProjectId equals proj.Id
                      where account == own && proj.Id == projectid
-                     select project).Any())
+                     select proj).Any())
                 {
                     project = await _db.Projects.Include("TeamMembers").FirstOrDefaultAsync(p => p.Id == projectid);
                     foreach (var member in project.TeamMembers)
@@ -62,9 +62,80 @@ namespace daBoot.Controllers
                         member.User = await _db.Users.FirstOrDefaultAsync(u => u.Id == member.UserId);
                         member.Role = await _db.Roles.FirstOrDefaultAsync(r => r.Id == member.RoleId);
                     }
+                    ViewData["UserRole"] = (from upr in _db.UserProjects
+                                           join account in _db.Users on upr.UserId equals account.Id
+                                           join proj in _db.Projects on upr.ProjectId equals proj.Id
+                                           join role in _db.Roles on upr.RoleId equals role.Id
+                                           where account == own && proj.Id == projectid
+                                           select role.RoleName).FirstOrDefault().ToString();
                 }
             }
             return View(project);
+        }
+
+        [HttpPost("project/{projectid}/promote/{userid}")]
+        public async Task<string> Promote(int projectid, int userid)
+        {
+            if (User.Identity.IsAuthenticated)
+            {
+                var ownusername = User.Claims.FirstOrDefault(c => c.Type == "username").Value;
+                var own = await _db.Users.FirstOrDefaultAsync(u => u.Username == ownusername);
+                var target = _db.Users.Find(userid);
+                // make sure both own and target users have
+                if ((from upr in _db.UserProjects
+                     join account in _db.Users on upr.UserId equals account.Id
+                     join proj in _db.Projects on upr.ProjectId equals proj.Id
+                     where (account == own || account == target) && proj.Id == projectid
+                     select proj).Count() == 2)
+                {
+                    var ownrole = _db.UserProjects.Find(own.Id, projectid);
+                    var targetrole = _db.UserProjects.Find(target.Id, projectid);
+                    if (ownrole.RoleId == 1 && targetrole.RoleId == 2)
+                    {
+                        ownrole.RoleId += 1;
+                        targetrole.RoleId -= 1;
+                    }
+                    else if (ownrole.RoleId < targetrole.RoleId)
+                    {
+                        targetrole.RoleId -= 1;
+                    }
+                    _db.SaveChanges();
+                    return "Success";
+                }
+            }
+            return "Failed";
+        }
+
+        [HttpPost("project/{projectid}/demote/{userid}")]
+        public async Task<string> Demote(int projectid, int userid)
+        {
+            if (User.Identity.IsAuthenticated)
+            {
+                var ownusername = User.Claims.FirstOrDefault(c => c.Type == "username").Value;
+                var own = await _db.Users.FirstOrDefaultAsync(u => u.Username == ownusername);
+                var target = _db.Users.Find(userid);
+                // make sure both own and target users have
+                if ((from upr in _db.UserProjects
+                     join account in _db.Users on upr.UserId equals account.Id
+                     join proj in _db.Projects on upr.ProjectId equals proj.Id
+                     where (account == own || account == target) && proj.Id == projectid
+                     select proj).Count() == 2)
+                {
+                    var ownrole = _db.UserProjects.Find(own.Id, projectid);
+                    var targetrole = _db.UserProjects.Find(target.Id, projectid);
+                    if (ownrole.RoleId < targetrole.RoleId && targetrole.RoleId == 3)
+                    {
+                        _db.UserProjects.Remove(targetrole);
+                    }
+                    else if (ownrole.RoleId < targetrole.RoleId)
+                    {
+                        targetrole.RoleId += 1;
+                    }
+                    _db.SaveChanges();
+                    return "Success";
+                }
+            }
+            return "Failed";
         }
     }
 }
