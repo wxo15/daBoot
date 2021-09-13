@@ -52,7 +52,7 @@ namespace daBoot.Controllers
                 var email = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email).Value;
                 var profpic = User.Claims.FirstOrDefault(c => c.Type == "profpic").Value;
                 var obj = new Account(username, nameparts[0], nameparts[1], email, profpic);
-                Account user = await _db.Users.FirstOrDefaultAsync(u => u.Username == username);
+                Account user = _db.Users.FirstOrDefault(u => u.Username == username);
 
                 // Remove email as not needed
                 var Identity = User.Identity as ClaimsIdentity;

@@ -1,6 +1,14 @@
 ﻿@model IEnumerable<daBoot.Controllers.ProjectController.ProjectRole>
 
 <script>
+    function createprojectpopuptoggle() {
+        var x = document.getElementById("createprojectpopup");
+        if (x.style.display === "none") {
+            x.style.display = "block";
+        } else {
+            x.style.display = "none";
+        }
+    }
 
 </script>
 
@@ -8,6 +16,18 @@
 <div class="container p-3">
     <div class="text-center">
         <h1 class="display-4">Your Projects</h1>
+    </div>
+
+    <button title="invite" class="btn btn-primary m-4" onclick="createprojectpopuptoggle()">Create project</button>
+    <div id="createprojectpopup" style="display: none;">
+        <form action="/createproject" method="post" class="form-inline">
+            <div class="input-group mb-3">
+                <input type="text" class="form-control" name="projectname" placeholder="Project name" aria-label="Project name" required="required" />
+            </div>
+            <div class="input-group mb-3">
+                <input type="submit" class="btn btn-success" value="Create" />
+            </div>
+        </form>
     </div>
 
     @if (Model.Count() > 0)

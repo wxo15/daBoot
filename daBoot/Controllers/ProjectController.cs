@@ -69,7 +69,7 @@ namespace daBoot.Controllers
                                            where account == own && proj.Id == projectid
                                            select role.RoleName).FirstOrDefault().ToString();
                     IEnumerable<int> idlist = _db.Relations.Where(u => u.UserId == own.Id).Select(u => u.TeamMemberId);
-                    ViewData["YourTeamMembers"] = _db.Users.Where(u => idlist.Contains(u.Id)).OrderBy(u => u.FirstName + " " + u.LastName);
+                    ViewData["YourTeamMembers"] = _db.Users.Where(u => idlist.Contains(u.Id) && !project.TeamMembers.Select(u => u.UserId).Contains(u.Id)).OrderBy(u => u.FirstName + " " + u.LastName);
                 }
             }
             return View(project);
@@ -159,7 +159,7 @@ namespace daBoot.Controllers
                                                    where account == target && proj.Id == projectid
                                                    select proj).Count() == 0)
                 {
-                    var newUserProject = new UserProject { ProjectId = projectid, UserId = userid, RoleId = 3 };
+                    var newUserProject = new UserProject(userid, projectid, 3); 
                     _db.UserProjects.Add(newUserProject);
                     _db.SaveChanges();
                     return "Success";
@@ -167,5 +167,26 @@ namespace daBoot.Controllers
             }
             return "Failed";
         }
+
+        [HttpPost("createproject")]
+        public async Task CreateProject(string projectname)
+        {
+            if (User.Identity.IsAuthenticated)
+            {
+                var ownusername = User.Claims.FirstOrDefault(c => c.Type == "username").Value;
+                var own = await _db.Users.FirstOrDefaultAsync(u => u.Username == ownusername);
+
+                var newproject = new Project(projectname);
+                _db.Projects.Add(newproject);
+                _db.SaveChanges();
+
+                int projectId = newproject.Id;
+                var newuserproject = new UserProject(own.Id, projectId, 1);
+                _db.UserProjects.Add(newuserproject);
+                _db.SaveChanges();
+                Redirect("~/myprojects");
+            }
+        }
+
     }
 }

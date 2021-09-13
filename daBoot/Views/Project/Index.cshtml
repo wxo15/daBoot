@@ -57,6 +57,15 @@
             xhr.send();
         }
     }
+
+    function invitepopuptoggle() {
+        var x = document.getElementById("invitepopup");
+        if (x.style.display === "none") {
+            x.style.display = "block";
+        } else {
+            x.style.display = "none";
+        }
+    }
 </script>
 
 <div class="container p-3">
@@ -67,7 +76,7 @@
             <h1 style="display: flex; flex-wrap: wrap;">@Model.Name</h1>
             <p style="display: flex; flex-wrap: wrap;">ID: @Model.Id</p>
             <p style="display: flex; flex-wrap: wrap;">Your role: @ViewData["UserRole"]</p>
-            <button title="invite" class="btn btn-primary m-4" onclick=" $('#invitepopup').show();">Invite your team member</button>
+            <button title="invite" class="btn btn-primary m-4" onclick="invitepopuptoggle()">Invite your team member</button>
             <div id="invitepopup" style="display: none;">
                 <select class="form-select" id="popupSelect" title="selection" onchange="invite()">
                     <option selected>Select your team member</option>
