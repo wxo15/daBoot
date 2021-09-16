@@ -11,6 +11,10 @@ namespace daBoot.Models
         [Key]
         public int Id { get; set; }
         [Required]
+        public int ProjectId { get; set; }
+        [Required]
+        public int PriorityId { get; set; }
+        [Required]
         public string Subject { get; set; }
         public int? AssignerId { get; set; }
         public DateTime? AssignedDateTime { get; set; }
@@ -21,6 +25,8 @@ namespace daBoot.Models
         [Required]
         public DateTime StatusUpdated { get; set; }
         public string Description { get; set; }
+        public virtual Priority Priority { get; set; }
+        public virtual Project Project { get; set; }
         public virtual Account Assigner { get; set; }
         public virtual Account Assignee { get; set; }
         public virtual Status Status { get; set; }
@@ -43,6 +49,15 @@ namespace daBoot.Models
         public int Id { get; set; }
         [Required]
         public string StatusName { get; set; }
+        public virtual ICollection<Ticket> Tickets { get; set; }
+    }
+
+    public class Priority
+    {
+        [Key]
+        public int Id { get; set; }
+        [Required]
+        public string PriorityName { get; set; }
         public virtual ICollection<Ticket> Tickets { get; set; }
     }
 }

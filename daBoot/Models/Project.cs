@@ -13,6 +13,7 @@ namespace daBoot.Models
         [Required]
         public string Name { get; set; }
         public virtual ICollection<UserProject> TeamMembers { get; set; }
+        public virtual ICollection<Ticket> Tickets { get; set; }
 
         public Project(string projectname)
         {

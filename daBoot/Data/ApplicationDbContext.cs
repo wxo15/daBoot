@@ -21,6 +21,9 @@ namespace daBoot.Data
         public DbSet<UserProject> UserProjects { get; set; }
         public DbSet<Role> Roles { get; set; }
         public DbSet<Ticket> Tickets { get; set; }
+        public DbSet<Priority> Priority { get; set; }
+        public DbSet<Status> Status { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Relation>()
@@ -53,6 +56,16 @@ namespace daBoot.Data
                         .HasOne(e => e.Role)
                         .WithMany(e => e.UserProject)
                         .HasForeignKey(e => e.RoleId);
+
+            modelBuilder.Entity<Ticket>()
+                        .HasOne(e => e.Priority)
+                        .WithMany(e => e.Tickets)
+                        .HasForeignKey(e => e.PriorityId);
+
+            modelBuilder.Entity<Ticket>()
+                        .HasOne(e => e.Project)
+                        .WithMany(e => e.Tickets)
+                        .HasForeignKey(e => e.ProjectId);
 
             modelBuilder.Entity<Ticket>()
                         .HasOne(e => e.Assignee)

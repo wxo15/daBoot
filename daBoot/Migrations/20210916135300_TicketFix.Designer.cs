@@ -2,15 +2,17 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using daBoot.Data;
 
 namespace daBoot.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210916135300_TicketFix")]
+    partial class TicketFix
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -71,21 +73,6 @@ namespace daBoot.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Items");
-                });
-
-            modelBuilder.Entity("daBoot.Models.Priority", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    b.Property<string>("PriorityName")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Priority");
                 });
 
             modelBuilder.Entity("daBoot.Models.Project", b =>
@@ -169,9 +156,6 @@ namespace daBoot.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("text");
 
-                    b.Property<int>("PriorityId")
-                        .HasColumnType("int");
-
                     b.Property<int>("ProjectId")
                         .HasColumnType("int");
 
@@ -190,8 +174,6 @@ namespace daBoot.Migrations
                     b.HasIndex("AssigneeId");
 
                     b.HasIndex("AssignerId");
-
-                    b.HasIndex("PriorityId");
 
                     b.HasIndex("ProjectId");
 
@@ -249,12 +231,6 @@ namespace daBoot.Migrations
                         .WithMany("TicketsToOthers")
                         .HasForeignKey("AssignerId");
 
-                    b.HasOne("daBoot.Models.Priority", "Priority")
-                        .WithMany("Tickets")
-                        .HasForeignKey("PriorityId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("daBoot.Models.Project", "Project")
                         .WithMany("Tickets")
                         .HasForeignKey("ProjectId")
@@ -270,8 +246,6 @@ namespace daBoot.Migrations
                     b.Navigation("Assignee");
 
                     b.Navigation("Assigner");
-
-                    b.Navigation("Priority");
 
                     b.Navigation("Project");
 
@@ -316,11 +290,6 @@ namespace daBoot.Migrations
                     b.Navigation("TeamMembers");
 
                     b.Navigation("TicketsToOthers");
-                });
-
-            modelBuilder.Entity("daBoot.Models.Priority", b =>
-                {
-                    b.Navigation("Tickets");
                 });
 
             modelBuilder.Entity("daBoot.Models.Project", b =>

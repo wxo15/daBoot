@@ -1,14 +1,14 @@
 ﻿@model daBoot.Models.Project
 
 <script>
-    function promote(userid, currrole) {
+    function promote(userid, currrole, projectid) {
         var response = true;
         if (currrole == "Dev") {
             response = confirm("This user is currently a dev. Promoting him will replace you as the lead, making you the dev. Are you sure?");
         }
         if (response == true) {
             var xhr = new XMLHttpRequest();
-            xhr.open("POST", "/project/" + @Model.Id + "/promote/" + userid, true);
+            xhr.open("POST", "/project/" + projectid + "/promote/" + userid, true);
             xhr.onreadystatechange = function () {
                 if (this.readyState != 4) return;
                 if (this.status == 200) {
@@ -21,14 +21,14 @@
         }
     }
 
-    function demote(userid, currrole) {
+    function demote(userid, currrole, projectid) {
         var response = true;
         if (currrole == "Tester") {
             response = confirm("This user is currently a tester. Demoting him will remove him from the project. Are you sure?");
         }
         if (response == true) {
             var xhr = new XMLHttpRequest();
-            xhr.open("POST", "/project/" + @Model.Id + "/demote/" + userid, true);
+            xhr.open("POST", "/project/" + projectid + "/demote/" + userid, true);
             xhr.onreadystatechange = function () {
                 if (this.readyState != 4) return;
                 if (this.status == 200) {
@@ -41,31 +41,33 @@
         }
     }
 
-    function invite() {
+    function invite(projectid) {
         var userid = document.getElementById("popupSelect").value;
         if (userid != null) {
             var xhr = new XMLHttpRequest();
-            xhr.open("POST", "/project/" + @Model.Id + "/invite/" + userid, true);
-            xhr.onreadystatechange = function () {
-                if (this.readyState != 4) return;
-                if (this.status == 200) {
-                    if (this.responseText == "Success") {
-                        document.location.reload(true);
-                    }
-                }
-            };
-            xhr.send();
+            /**/
+            xhr.open("POST", "/project/" + projectid + "/invite/" + userid, true);
+    /**/
+    xhr.onreadystatechange = function () {
+        if (this.readyState != 4) return;
+        if (this.status == 200) {
+            if (this.responseText == "Success") {
+                document.location.reload(true);
+            }
         }
-    }
+    };
+    xhr.send();
+}
+}
 
-    function invitepopuptoggle() {
-        var x = document.getElementById("invitepopup");
-        if (x.style.display === "none") {
-            x.style.display = "block";
-        } else {
-            x.style.display = "none";
-        }
-    }
+function invitepopuptoggle() {
+var x = document.getElementById("invitepopup");
+if (x.style.display === "none") {
+    x.style.display = "block";
+} else {
+    x.style.display = "none";
+}
+}
 </script>
 
 <div class="container p-3">
@@ -78,7 +80,7 @@
             <p style="display: flex; flex-wrap: wrap;">Your role: @ViewData["UserRole"]</p>
             <button title="invite" class="btn btn-primary m-4" onclick="invitepopuptoggle()">Invite your team member</button>
             <div id="invitepopup" style="display: none;">
-                <select class="form-select" id="popupSelect" title="selection" onchange="invite()">
+                <select class="form-select" id="popupSelect" title="selection" onchange="invite(@Model.Id)">
                     <option selected>Select your team member</option>
                     @foreach (var teammember in (IEnumerable<Account>)ViewData["YourTeamMembers"])
                     {
@@ -116,8 +118,8 @@
                             @if (ViewData["UserRole"].ToString() == "Lead")
                             {
                                 <td width="20%" style="vertical-align:middle;">
-                                    <button title="promote" class="btn btn-success" onclick="promote(@member.UserId, 'Dev')"><i class="icon-caret-up"></i></button>
-                                    <button title="demote" class="btn btn-danger" onclick="demote(@member.UserId, 'Dev')"><i class="icon-caret-down"></i></button>
+                                    <button title="promote" class="btn btn-success" onclick="promote(@member.UserId, 'Dev', @Model.Id)"><i class="icon-caret-up"></i></button>
+                                    <button title="demote" class="btn btn-danger" onclick="demote(@member.UserId, 'Dev', @Model.Id)"><i class="icon-caret-down"></i></button>
                                 </td>
                             }
                         </tr>
@@ -137,8 +139,8 @@
                             @if (ViewData["UserRole"].ToString() == "Lead" || ViewData["UserRole"].ToString() == "Dev")
                             {
                             <td width="20%" style="vertical-align:middle;">
-                                <button title="promote" class="btn btn-success" onclick="promote(@member.UserId, 'Tester')"><i class="icon-caret-up"></i></button>
-                                <button title="demote" class="btn btn-danger" onclick="demote(@member.UserId, 'Tester')"><i class="icon-caret-down"></i></button>
+                                <button title="promote" class="btn btn-success" onclick="promote(@member.UserId, 'Tester', @Model.Id)"><i class="icon-caret-up"></i></button>
+                                <button title="demote" class="btn btn-danger" onclick="demote(@member.UserId, 'Tester', @Model.Id)"><i class="icon-caret-down"></i></button>
                             </td>
                             }
                         </tr>
