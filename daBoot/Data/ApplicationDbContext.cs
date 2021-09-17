@@ -68,6 +68,11 @@ namespace daBoot.Data
                         .HasForeignKey(e => e.ProjectId);
 
             modelBuilder.Entity<Ticket>()
+                        .HasOne(e => e.Submitter)
+                        .WithMany(e => e.SubmittedTickets)
+                        .HasForeignKey(e => e.SubmitterId);
+
+            modelBuilder.Entity<Ticket>()
                         .HasOne(e => e.Assignee)
                         .WithMany(e => e.AssignedTickets)
                         .HasForeignKey(e => e.AssigneeId);

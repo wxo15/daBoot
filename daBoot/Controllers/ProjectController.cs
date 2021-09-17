@@ -56,11 +56,19 @@ namespace daBoot.Controllers
                      where account == own && proj.Id == projectid
                      select proj).Any())
                 {
-                    project = await _db.Projects.Include("TeamMembers").FirstOrDefaultAsync(p => p.Id == projectid);
+                    project = await _db.Projects
+                        .Include("TeamMembers")
+                        .Include("Tickets")
+                        .FirstOrDefaultAsync(p => p.Id == projectid);
                     foreach (var member in project.TeamMembers)
                     {
                         member.User = await _db.Users.FirstOrDefaultAsync(u => u.Id == member.UserId);
                         member.Role = await _db.Roles.FirstOrDefaultAsync(r => r.Id == member.RoleId);
+                    }
+                    foreach (var ticket in project.Tickets)
+                    {
+                        ticket.Priority = await _db.Priority.FirstOrDefaultAsync(p => p.Id == ticket.PriorityId);
+                        ticket.Status = await _db.Status.FirstOrDefaultAsync(s => s.Id == ticket.StatusId);
                     }
                     ViewData["UserRole"] = (from upr in _db.UserProjects
                                            join account in _db.Users on upr.UserId equals account.Id

@@ -1,0 +1,28 @@
+﻿@model int
+
+<h1>Create a Ticket for Project ID: @Model</h1>
+<form method="post" action="/createticket?projectid=@Model">
+    <div class="form-group">
+        <label for="subjectinput">Subject</label>
+        <input type="text" class="form-control" id="subjectinput" placeholder="" name="subject">
+    </div>
+    <div class="form-group">
+        <label for="priorityinput">Select priority</label>
+        <select class="form-control" id="priorityinput" name="priority">
+            <option>High</option>
+            <option>Medium</option>
+            <option>Low</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="descriptioninput">Description</label>
+        <textarea class="form-control" id="descriptioninput" rows="3" name="description"></textarea>
+    </div>
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>
+
+@if (!User.Identity.IsAuthenticated)
+{
+    <h2>OR</h2>
+    <p><a href="/login">Sign In/Register to track your ticket</a></p>
+}

@@ -16,6 +16,8 @@ namespace daBoot.Models
         public int PriorityId { get; set; }
         [Required]
         public string Subject { get; set; }
+        public int? SubmitterId { get; set; }
+        public DateTime? SubmittedDateTime { get; set; }
         public int? AssignerId { get; set; }
         public DateTime? AssignedDateTime { get; set; }
         public int? AssigneeId { get; set; }
@@ -27,15 +29,21 @@ namespace daBoot.Models
         public string Description { get; set; }
         public virtual Priority Priority { get; set; }
         public virtual Project Project { get; set; }
+        public virtual Account Submitter { get; set; }
         public virtual Account Assigner { get; set; }
         public virtual Account Assignee { get; set; }
         public virtual Status Status { get; set; }
 
-        public Ticket(string subject)
+        public Ticket(int projectid, string subject, int priorityid, string description, int? submitterid = -1)
         {
+            ProjectId = projectid;
             Subject = subject;
-            StatusId = 1;
+            SubmitterId = submitterid;
+            SubmittedDateTime = DateTime.Now;
+            StatusId = 4;
             StatusUpdated = DateTime.Now;
+            PriorityId = priorityid;
+            Description = description;
         }
         public Ticket()
         {

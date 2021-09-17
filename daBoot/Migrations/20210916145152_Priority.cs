@@ -7,13 +7,13 @@ namespace daBoot.Migrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<int>(
+            /*migrationBuilder.AddColumn<int>(
                 name: "PriorityId",
                 table: "Tickets",
                 type: "int",
                 nullable: false,
                 defaultValue: 0);
-
+            
             migrationBuilder.CreateTable(
                 name: "Priority",
                 columns: table => new
@@ -26,7 +26,7 @@ namespace daBoot.Migrations
                 {
                     table.PrimaryKey("PK_Priority", x => x.Id);
                 });
-
+            */
             migrationBuilder.CreateIndex(
                 name: "IX_Tickets_PriorityId",
                 table: "Tickets",

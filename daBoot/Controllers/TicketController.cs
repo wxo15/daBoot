@@ -30,6 +30,7 @@ namespace daBoot.Controllers
                 Ticket thisticket = await _db.Tickets
                     .Include("Status")
                     .Include("Priority")
+                    .Include("Submitter")
                     .Include("Assigner")
                     .Include("Assignee")
                     .Include("Priority").FirstOrDefaultAsync(u => u.Id == ticketid);
@@ -89,6 +90,39 @@ namespace daBoot.Controllers
                 }
             }
             return RedirectToAction("Index", new { ticketid });
+        }
+
+        [HttpGet("createticket/{projectid}")]
+        public IActionResult CreateTicket(int projectid)
+        {
+            return View(projectid);
+        }
+
+        [HttpPost("createticket")]
+        public async Task<IActionResult> CreateTicket(int projectid, string subject, string priority, string description)
+        {
+            var project = _db.Projects.Find(projectid);
+            int? priorityid = _db.Priority.FirstOrDefault(p => p.PriorityName == priority).Id;
+            if (project != null && priorityid != null)
+            {
+                int userid = -1;
+                if (User.Identity.IsAuthenticated)
+                {
+                    var ownusername = User.Claims.FirstOrDefault(c => c.Type == "username").Value;
+                    var own = await _db.Users.FirstOrDefaultAsync(u => u.Username == ownusername);
+                    userid = own.Id;
+                }
+                Ticket ticket = new Ticket(projectid, subject, (int)priorityid, description, userid);
+                _db.Tickets.Add(ticket);
+                _db.SaveChanges();
+            }
+            return Redirect("~/thankyou");
+        }
+
+        [HttpGet("thankyou")]
+        public IActionResult ThankYou()
+        {
+            return View();
         }
 
     }

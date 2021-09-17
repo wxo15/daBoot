@@ -131,3 +131,7 @@ input {
     clear: both;
 }
 
+p {
+    margin-bottom:0;
+}
+

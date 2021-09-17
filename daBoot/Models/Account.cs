@@ -24,6 +24,7 @@ namespace daBoot.Models
         public virtual ICollection<Relation> OthersTeamMember { get; set; }
         public virtual ICollection<UserProject> Projects { get; set; }
         public virtual ICollection<Ticket> AssignedTickets { get; set; }
+        public virtual ICollection<Ticket> SubmittedTickets { get; set; }
         public virtual ICollection<Ticket> TicketsToOthers { get; set; }
 
 

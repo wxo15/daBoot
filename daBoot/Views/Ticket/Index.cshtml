@@ -32,10 +32,12 @@
 <div class="container p-3">
     @if (Model != null)
     {
+        <a href="/project/@Model.ProjectId">Back to project</a>
         <h1>Subject: @Model.Subject</h1>
         <div style="display: flex;">
             <div style="display: flex; flex-direction: column; flex: 1;">
                 <p style="display: flex; flex-wrap: wrap;">Priority: @Model.Priority.PriorityName</p>
+                <p style="display: flex; flex-wrap: wrap;">Submitter: @((Model.Submitter?.FirstName ?? "").ToString()) @((Model?.Submitter?.LastName ?? "").ToString())</p>
                 <p style="display: flex; flex-wrap: wrap;">Assigner: @((Model.Assigner?.FirstName ?? "").ToString()) @((Model?.Assigner?.LastName ?? "").ToString())</p>
                 <p style="display: flex; flex-wrap: wrap;">Assignee: @((Model.Assignee?.FirstName ?? "").ToString()) @((Model.Assignee?.LastName ?? "").ToString())</p>
                 <p style="display: flex; flex-wrap: wrap;">Status: @Model.Status.StatusName</p>
@@ -62,6 +64,7 @@
             </div>
             <div style="display: flex; flex-direction: column; flex: 1;">
                 <p style="display: flex; flex-wrap: wrap;">Id: @Model.Id</p>
+                <p style="display: flex; flex-wrap: wrap;">Submitted On: @((Model.SubmittedDateTime?.Date.ToString("dd MMM yyyy") ?? "").ToString())</p>
                 <p style="display: flex; flex-wrap: wrap;">Assigned On: @((Model.AssignedDateTime?.Date.ToString("dd MMM yyyy") ?? "").ToString())</p>
                 <p style="display: flex; flex-wrap: wrap;">Deadline: @((Model.Deadline?.Date.ToString("dd MMM yyyy") ?? "").ToString())</p>
                 <p style="display: flex; flex-wrap: wrap;">Status Updated On: @Model.StatusUpdated.Date.ToString("dd MMM yyyy")</p>
