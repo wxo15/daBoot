@@ -1,23 +1,6 @@
 ﻿@model daBoot.Models.Ticket
 
 <script>
-    function updatestatus(ticketid) {
-        var statusid = document.getElementById("statuspopupSelect").value;
-        if (statusid != null) {
-            var xhr = new XMLHttpRequest();
-            xhr.open("POST", "/ticket/" + ticketid + "/status/" + statusid, true);
-            xhr.onreadystatechange = function () {
-                if (this.readyState != 4) return;
-                if (this.status == 200) {
-                    if (this.responseText == "Success") {
-                        document.location.reload(true);
-                    }
-                }
-            };
-            xhr.send();
-        }
-    }
-
     function popuptoggle(idname) {
         var x = document.getElementById(idname);
         if (x.style.display === "none") {
@@ -37,9 +20,23 @@
         <div style="display: flex;">
             <div style="display: flex; flex-direction: column; flex: 1;">
                 <p style="display: flex; flex-wrap: wrap;">Priority: @Model.Priority.PriorityName</p>
-                <p style="display: flex; flex-wrap: wrap;">Submitter: @((Model.Submitter?.FirstName ?? "").ToString()) @((Model?.Submitter?.LastName ?? "").ToString())</p>
-                <p style="display: flex; flex-wrap: wrap;">Assigner: @((Model.Assigner?.FirstName ?? "").ToString()) @((Model?.Assigner?.LastName ?? "").ToString())</p>
-                <p style="display: flex; flex-wrap: wrap;">Assignee: @((Model.Assignee?.FirstName ?? "").ToString()) @((Model.Assignee?.LastName ?? "").ToString())</p>
+                <p style="display: flex; flex-wrap: wrap;">Submitter: @((Model.Submitter?.FirstName ?? "").ToString()) @((Model.Submitter?.LastName ?? "").ToString())</p>
+                @if (Model.Assigner == null)
+                {
+                    <p style="display: flex; flex-wrap: wrap;">Assigner: Not assigned</p>
+                }
+                else
+                {
+                    <p style="display: flex; flex-wrap: wrap;">Assigner: <strong><a href="/profile/@Model.Assigner.Username">@Model.Assigner.FirstName @Model.Assigner.LastName</a></strong></p>
+                }
+                @if (Model.Assignee == null)
+                {
+                    <p style="display: flex; flex-wrap: wrap;">Assignee: Not assigned</p>
+                }
+                else
+                {
+                    <p style="display: flex; flex-wrap: wrap;">Assignee: <strong><a href="/profile/@Model.Assignee.Username">@Model.Assignee.FirstName @Model.Assignee.LastName</a></strong></p>
+                }
                 <p style="display: flex; flex-wrap: wrap;">Status: @Model.Status.StatusName</p>
                 <button title="invite" class="btn btn-primary m-4" onclick="popuptoggle('assignpopup')">Assign to</button>
                 @if (ViewData["UserRole"].ToString() == "Dev" || ViewData["UserRole"].ToString() == "Lead")
@@ -56,7 +53,14 @@
                                     }
                                 }
                             </select>
-                            <input type="date" class="form-control" id="deadline" name="deadline" required>
+                            @if (Model.Deadline == null)
+                            {
+                                <input type="date" class="form-control" id="deadline" name="deadline" required>
+                            }
+                            else
+                            {
+                                <input type="date" class="form-control" id="deadline" name="deadline" value="@Model.Deadline.ToString()" required>
+                            }
                             <input type="submit" class="form-control" />
                         </form>
                     </div>
@@ -72,22 +76,58 @@
                 {
                     <button title="invite" class="btn btn-success m-4" onclick="popuptoggle('statuspopup')">Update status</button>
                     <div id="statuspopup" style="display: none;">
-                        <select class="form-select" id="statuspopupSelect" title="selection" onchange="updatestatus(@Model.Id)">
-                            <option selected>Change status to</option>
-                            @if ((IEnumerable<Status>)ViewData["StatusCandidate"] != null)
-                            {
-                                foreach (var validstatus in (IEnumerable<Status>)ViewData["StatusCandidate"])
+                        <form action="/statusupdate?ticketid=@Model.Id" method="post" id="statusform">
+                            <select class="form-select" id="statuspopupSelect" title="selection" form="statusform" name="statusid">
+                                <option selected>Change status to</option>
+                                @if ((IEnumerable<Status>)ViewData["StatusCandidate"] != null)
                                 {
-                                    <option value=@validstatus.Id>@validstatus.StatusName</option>
+                                    foreach (var validstatus in (IEnumerable<Status>)ViewData["StatusCandidate"])
+                                    {
+                                        <option value=@validstatus.Id>@validstatus.StatusName</option>
+                                    }
                                 }
-                            }
-                        </select>
+                            </select>
+                            <input type="submit" class="form-control" />
+                        </form>
                     </div>
                 }
             </div>
         </div>
-        <h3>Description</h3>
-        <textarea class="form-control" width ="100%">@Model.Description</textarea>
+        <h3 class="mt-3">Description</h3>
+        <p width="100%">@Model.Description</p>
+        
+        <h3 class="mt-3">Comments</h3>
+        <table class="table table-bordered table-striped" style="width:100%">
+            <tbody>
+                <tr>
+                    <td width="100%" style="vertical-align:middle;">
+                        <form action="/newcomment/?ticketid=@Model.Id" method="post">
+                            <div class="input-group">
+                                <input type="text" class="form-control" placeholder="Comment here" name="commentstr" id="commentform">
+                                <div class="input-group-btn">
+                                    <button class="btn btn-primary" type="submit">Post</button>
+                                </div>
+                            </div>
+                        </form>
+                    </td>
+                </tr>
+                @foreach (var comment in Model.Comments.OrderBy(u => u.CommentTimeStamp))
+                {
+                    <tr>
+                        <td width="100%" style="vertical-align:middle;">
+                            <span style="float:left;">
+                                <strong><a href="/profile/@comment.CommentUser.Username">@comment.CommentUser.FirstName @comment.CommentUser.LastName</a></strong>
+                            </span>
+                            <span style="float:right;">
+                                <em>@comment.CommentTimeStamp.ToString("dd MMM yyyy hh:mm tt")</em>
+                            </span><br />
+                            <p>@comment.CommentString</p>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
     }
     else
     {

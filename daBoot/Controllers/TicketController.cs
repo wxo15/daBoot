@@ -33,7 +33,12 @@ namespace daBoot.Controllers
                     .Include("Submitter")
                     .Include("Assigner")
                     .Include("Assignee")
+                    .Include("Comments")
                     .Include("Priority").FirstOrDefaultAsync(u => u.Id == ticketid);
+                foreach (var comment in thisticket.Comments)
+                {
+                    comment.CommentUser = await _db.Users.FirstOrDefaultAsync(u => u.Id == comment.UserId);
+                }
                 if (thisticket != null && (from upr in _db.UserProjects
                      join account in _db.Users on upr.UserId equals account.Id
                      join proj in _db.Projects on upr.ProjectId equals proj.Id
@@ -65,7 +70,7 @@ namespace daBoot.Controllers
         public async Task<IActionResult> AssignTicket(int ticketid, int userid, DateTime deadline)
         {
             var ticket = _db.Tickets.Find(ticketid);
-            if (ticket == null || User.Identity.IsAuthenticated)
+            if (ticket != null && User.Identity.IsAuthenticated)
             {
                 var ownusername = User.Claims.FirstOrDefault(c => c.Type == "username").Value;
                 var own = await _db.Users.FirstOrDefaultAsync(u => u.Username == ownusername);
@@ -91,6 +96,27 @@ namespace daBoot.Controllers
             }
             return RedirectToAction("Index", new { ticketid });
         }
+
+        [HttpPost("statusupdate")]
+        public async Task<IActionResult> UpdateStatus(int ticketid, int statusid)
+        {
+            var ticket = _db.Tickets.Find(ticketid);
+            if (ticket != null && User.Identity.IsAuthenticated)
+            {
+                var ownusername = User.Claims.FirstOrDefault(c => c.Type == "username").Value;
+                var own = await _db.Users.FirstOrDefaultAsync(u => u.Username == ownusername);
+                // make sure authenticated user is the assignee
+                if (ticket.Assignee == own)
+                {
+                    ticket.StatusUpdated = DateTime.Now;
+                    ticket.StatusId = statusid;
+                    _db.SaveChanges();
+                }
+            }
+            return RedirectToAction("Index", new { ticketid });
+        }
+
+
 
         [HttpGet("createticket/{projectid}")]
         public IActionResult CreateTicket(int projectid)
@@ -125,5 +151,25 @@ namespace daBoot.Controllers
             return View();
         }
 
+        [HttpPost("newcomment")]
+        public async Task<IActionResult> AddComment(int ticketid, string commentstr)
+        {
+            Ticket ticket = _db.Tickets.Find(ticketid);
+            if (ticket != null && User.Identity.IsAuthenticated)
+            {
+                var ownusername = User.Claims.FirstOrDefault(c => c.Type == "username").Value;
+                var own = await _db.Users.FirstOrDefaultAsync(u => u.Username == ownusername);
+                int userid = own.Id;
+                // only allow new comment if user is part of the project.
+                UserProject userproject = _db.UserProjects.Find(userid, ticket.ProjectId);
+                if (userproject != null)
+                {
+                    Comment comment = new(userid, ticketid, commentstr);
+                    _db.Comments.Add(comment);
+                    _db.SaveChanges();
+                }
+            }
+            return RedirectToAction("Index", new { ticketid });
+        }
     }
 }

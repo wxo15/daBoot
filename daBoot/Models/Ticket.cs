@@ -33,6 +33,8 @@ namespace daBoot.Models
         public virtual Account Assigner { get; set; }
         public virtual Account Assignee { get; set; }
         public virtual Status Status { get; set; }
+        public virtual ICollection<Comment> Comments { get; set; }
+
 
         public Ticket(int projectid, string subject, int priorityid, string description, int? submitterid = -1)
         {
