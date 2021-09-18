@@ -1,9 +1,11 @@
 ﻿@model daBoot.Models.Account
-
+@{
+    ViewData["Title"] = "Profile";
+}
 <script>
     function addteammember(userid) {
         var xhr = new XMLHttpRequest();
-        xhr.open("POST", "/addteammember/"+userid, true);
+        xhr.open("POST", "/addteammember/" + userid, true);
         xhr.onreadystatechange = function () {
             if (this.readyState != 4) return;
 
@@ -35,7 +37,8 @@
 </script>
 
 <div class="container p-3">
-    @if (Model != null){
+    @if (Model != null)
+    {
         <div class="row m-3" style="text-align:center;">
             <img class="center" src=@Model.ProfilePicURL alt="profile pic" style="object-fit: cover; width: 30vh; height: 30vh; overflow: hidden; border-radius: 15vh; background-color: white; display: block; margin-left: auto; margin-right: auto;">
         </div>
@@ -101,7 +104,7 @@
                     <div class="input-group mb-3">
                         <input type="submit" onclick="addteammember(@Model.Id)" class="btn btn-success" value="Add as Team Member" />
                     </div>
-                    
+
                 }
                 else
                 {

@@ -28,7 +28,7 @@
         </div>
         <div class="border-top" style="list-style-type: none; padding: 0; margin: 0; height:50vh;">
             @if (User.Identity.IsAuthenticated){
-                <a class="nav-link text-light sidebar-item" style="width:100%;">Dashboard</a>
+                <a class="nav-link text-light sidebar-item" style="width:100%;" href="/dashboard">Dashboard</a>
                 <a class="nav-link text-light sidebar-item" style="width:100%;" asp-controller="Project" asp-action="ProjectList">Projects & Roles</a>
                 <a class="nav-link text-light sidebar-item" style="width:100%;" href="/profile">Your Profile</a>
                 <a class="nav-link text-light sidebar-item" style="width:100%;" asp-controller="Profile" asp-action="TeamMemberList">Team Members</a>

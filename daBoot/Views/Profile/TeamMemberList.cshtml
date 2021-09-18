@@ -1,5 +1,8 @@
 ﻿@model IEnumerable<Account>
 
+@{
+    ViewData["Title"] = "Your Team Members";
+}
 <script>
     function rmvteammember(userid) {
         var xhr = new XMLHttpRequest();
@@ -43,11 +46,11 @@
                         </td>
                     </tr>
                 }
-                </tbody>
-                </table>
-            }
-            else
-            {
-                <p>You don't have any team member.</p>
-            }
-    </div>
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <p>You don't have any team member.</p>
+    }
+</div>

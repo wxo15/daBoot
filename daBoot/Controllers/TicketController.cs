@@ -171,5 +171,68 @@ namespace daBoot.Controllers
             }
             return RedirectToAction("Index", new { ticketid });
         }
+
+        [HttpGet("dashboard")]
+        public IActionResult Dashboard()
+        {
+            Random rnd = new();
+            List<StackedViewModel> lstModel = new();
+            StackedViewModel openobj = new StackedViewModel {
+                StackedDimensionOne = "Open",
+                LstData = new List<SimpleReportViewModel>() {
+                            new SimpleReportViewModel()
+                            {
+                                DimensionOne = "High",
+                                Quantity = rnd.Next(10)
+                            },
+                            new SimpleReportViewModel()
+                            {
+                                DimensionOne = "Medium",
+                                Quantity = rnd.Next(10)
+                            },
+                            new SimpleReportViewModel()
+                            {
+                                DimensionOne = "Low",
+                                Quantity = rnd.Next(10)
+                            }
+                    }
+            };
+            StackedViewModel lateobj = new StackedViewModel
+            {
+                StackedDimensionOne = "Late",
+                LstData = new List<SimpleReportViewModel>() {
+                            new SimpleReportViewModel()
+                            {
+                                DimensionOne = "High",
+                                Quantity = rnd.Next(10)
+                            },
+                            new SimpleReportViewModel()
+                            {
+                                DimensionOne = "Medium",
+                                Quantity = rnd.Next(10)
+                            },
+                            new SimpleReportViewModel()
+                            {
+                                DimensionOne = "Low",
+                                Quantity = rnd.Next(10)
+                            }
+                    }
+            };
+            lstModel.Add(openobj);
+            lstModel.Add(lateobj);
+            return View(lstModel);  
+       }  
+
+        public class SimpleReportViewModel
+        {
+            public string DimensionOne { get; set; }
+            public int Quantity { get; set; }
+        }
+
+        public class StackedViewModel
+        {
+            public string StackedDimensionOne { get; set; }
+            public List<SimpleReportViewModel> LstData { get; set; }
+        }
     }
 }

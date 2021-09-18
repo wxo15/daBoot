@@ -1,5 +1,7 @@
 ﻿@model daBoot.Models.Project
-
+@{
+    ViewData["Title"] = "Project";
+}
 <script>
     function promote(userid, currrole, projectid) {
         var response = true;
@@ -47,27 +49,27 @@
             var xhr = new XMLHttpRequest();
             /**/
             xhr.open("POST", "/project/" + projectid + "/invite/" + userid, true);
-    /**/
-    xhr.onreadystatechange = function () {
-        if (this.readyState != 4) return;
-        if (this.status == 200) {
-            if (this.responseText == "Success") {
-                document.location.reload(true);
-            }
+            /**/
+            xhr.onreadystatechange = function () {
+                if (this.readyState != 4) return;
+                if (this.status == 200) {
+                    if (this.responseText == "Success") {
+                        document.location.reload(true);
+                    }
+                }
+            };
+            xhr.send();
         }
-    };
-    xhr.send();
-}
-}
+    }
 
-function invitepopuptoggle() {
-var x = document.getElementById("invitepopup");
-if (x.style.display === "none") {
-    x.style.display = "block";
-} else {
-    x.style.display = "none";
-}
-}
+    function invitepopuptoggle() {
+        var x = document.getElementById("invitepopup");
+        if (x.style.display === "none") {
+            x.style.display = "block";
+        } else {
+            x.style.display = "none";
+        }
+    }
 </script>
 
 <div class="container p-3">
@@ -172,15 +174,15 @@ if (x.style.display === "none") {
                             </td>
                             @if (ticket.Priority.PriorityName == "High")
                             {
-                                <td width="10%" style="vertical-align: middle; background-color: Tomato;"></td>
+                                <td width="10%" style="vertical-align: middle; background-color: rgba(255, 0, 0, 1);"></td>
                             }
                             else if (ticket.Priority.PriorityName == "Medium")
                             {
-                                <td width="10%" style="vertical-align: middle; background-color: Moccasin;"></td>
+                                <td width="10%" style="vertical-align: middle; background-color: rgba(255, 212, 42, 1);"></td>
                             }
                             else
                             {
-                                <td width="10%" style="vertical-align: middle; background-color: PaleGreen;"></td>
+                                <td width="10%" style="vertical-align: middle; background-color: rgba(0, 212, 85, 1);"></td>
                             }
 
                             @if (ticket.Status.StatusName == "Closed")
@@ -189,11 +191,11 @@ if (x.style.display === "none") {
                             }
                             else if (ticket.Status.StatusName == "Late")
                             {
-                                <td width="10%" style="vertical-align: middle; background-color: Tomato;"></td>
+                                <td width="10%" style="vertical-align: middle; background-color: rgba(255, 0, 0, 1);"></td>
                             }
                             else if (ticket.Status.StatusName == "Open")
                             {
-                                <td width="10%" style="vertical-align: middle; background-color: PaleGreen;"></td>
+                                <td width="10%" style="vertical-align: middle; background-color: rgba(0, 212, 85, 1);"></td>
                             }
                             else
                             {

@@ -1,0 +1,97 @@
+﻿@model List<daBoot.Controllers.TicketController.StackedViewModel>
+@{
+    var XLabels = Newtonsoft.Json.JsonConvert.SerializeObject(Model.FirstOrDefault().LstData.Select(x => x.DimensionOne).ToList());
+    var YValues = Newtonsoft.Json.JsonConvert.SerializeObject(Model.Select(x => x.LstData.Select(w => w.Quantity)).ToList());
+    var label1 = Newtonsoft.Json.JsonConvert.SerializeObject(Model.Select(x => x.StackedDimensionOne).ToList());
+    ViewData["Title"] = "Dashboard";
+}
+
+
+<div style="display: flex !important; height: 50vh">
+    <div class="chart-item">
+        <h3>My Assigned Tickets</h3>
+        <div style="height: 100%">
+            <canvas id="stackedAssignedTickets" style="border: 2px solid #000000;"> </canvas>
+        </div>
+    </div>
+    <div class="chart-item">
+
+    </div>
+</div>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.bundle.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+<script type="text/javascript">
+ $(function() {
+    var ctx = document.getElementById("stackedAssignedTickets").getContext('2d');
+    var XLabels = @Html.Raw(XLabels);
+    var YValues = @Html.Raw(YValues);
+    var label = @Html.Raw(label1);
+    var aux = 0;
+    var barChartData = {
+        labels: @Html.Raw(label1),
+        datasets: []
+    }
+    XLabels.forEach(function(a, i) {
+        var data = [];
+        YValues.forEach(function(a, i) {
+            data.push(a[aux]);
+        });
+        barChartData.datasets.push({
+            label: XLabels[aux],
+            backgroundColor: set_rgba(XLabels[aux]),
+            data: data
+        });
+        aux++;
+    });
+
+    var options = {
+        maintainAspectRatio: false,
+        scales: {
+            yAxes: [{
+                ticks: {
+                    min: 0,
+                    beginAtZero: true,
+                },
+                stacked: true,
+                gridLines: {
+                    display: false,
+                    color: 'black',
+                    lineWidth: 3
+                }
+            }],
+            xAxes: [{
+                stacked: true,
+                gridLines: {
+                    display: false,
+                    color: 'black',
+                    lineWidth: 3
+                }
+            }]
+        }
+    };
+
+     function random_rgba() {
+         var o = Math.round,
+             r = Math.random,
+             s = 255;
+         return 'rgba(' + o(r() * s) + ',' + o(r() * s) + ',' + o(r() * s) + ',' + r().toFixed(1) + ')';
+     }
+
+     function set_rgba(dimension) {
+         if (dimension == "High") {
+             return 'rgba(255, 0, 0, 1)';
+         } else if (dimension == "Medium") {
+             return 'rgba(255, 212, 42, 1)';
+         } else {
+             return 'rgba(0, 212, 85, 1)';
+         };
+     };
+     var myChart = new Chart(ctx, {
+         options: options,
+         data: barChartData,
+         type: 'bar'
+    });
+ });
+</script>  

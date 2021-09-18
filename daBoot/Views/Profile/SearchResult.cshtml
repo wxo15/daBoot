@@ -1,5 +1,7 @@
 ﻿@model IEnumerable<daBoot.Controllers.ProfileController.SearchItemResult>
-
+@{
+    ViewData["Title"] = "Search Result";
+}
 
 <script>
     function addteammember(userid) {
@@ -42,37 +44,38 @@
 
     @if (Model.Count() > 0)
     {
-    <table class="table table-bordered table-striped" style="width:100%">
-        <tbody>
-            @foreach (var member in Model)
-            {
-            <tr>
-                <td width="10%" style="vertical-align:middle;">
-                    <img class="center" src=@member.Account.ProfilePicURL alt="profile pic" style="object-fit: cover; width: 100%; overflow: hidden; border-radius: 15vh; background-color: white; display: block; margin-left: auto; margin-right: auto;">
-                </td>
-                <td width="80%" style="vertical-align:middle;">
-                    <h3><a href="/profile/@member.Account.Username">@member.Account.FirstName @member.Account.LastName</a></h3>
-                    <p class="text-muted">@@@member.Account.Username</p>
-                </td>
-                <td width="10%" style="vertical-align:middle;">
-                    @if (User.Identity.IsAuthenticated) {  
-                        @if (member.IsMember)
-                        {
-                            <button onclick="rmvteammember(@member.Account.Id)" class="btn btn-secondary">-</button>
-                        }
-                        else
-                        {
-                            <button onclick="addteammember(@member.Account.Id)" class="btn btn-success">+</button>
-                        }
-                    }
-                </td>
-            </tr>
-            }
-        </tbody>
-    </table>
+        <table class="table table-bordered table-striped" style="width:100%">
+            <tbody>
+                @foreach (var member in Model)
+                {
+                    <tr>
+                        <td width="10%" style="vertical-align:middle;">
+                            <img class="center" src=@member.Account.ProfilePicURL alt="profile pic" style="object-fit: cover; width: 100%; overflow: hidden; border-radius: 15vh; background-color: white; display: block; margin-left: auto; margin-right: auto;">
+                        </td>
+                        <td width="80%" style="vertical-align:middle;">
+                            <h3><a href="/profile/@member.Account.Username">@member.Account.FirstName @member.Account.LastName</a></h3>
+                            <p class="text-muted">@@@member.Account.Username</p>
+                        </td>
+                        <td width="10%" style="vertical-align:middle;">
+                            @if (User.Identity.IsAuthenticated)
+                            {
+                                @if (member.IsMember)
+                                {
+                                    <button onclick="rmvteammember(@member.Account.Id)" class="btn btn-secondary">-</button>
+                                }
+                                else
+                                {
+                                    <button onclick="addteammember(@member.Account.Id)" class="btn btn-success">+</button>
+                                }
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
     }
     else
     {
-    <p>No result found.</p>
+        <p>No result found.</p>
     }
 </div>

@@ -135,3 +135,10 @@ p {
     margin-bottom:0;
 }
 
+.chart-item {
+    /*min-width: 400px;*/
+    display: flex !important;
+    flex-direction: column;
+    padding: 20px;
+    flex: 50%
+}
