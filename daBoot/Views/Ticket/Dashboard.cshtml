@@ -1,13 +1,20 @@
 ﻿@model List<daBoot.Controllers.TicketController.StackedViewModel>
 @{
-    var XLabels = Newtonsoft.Json.JsonConvert.SerializeObject(Model.FirstOrDefault().LstData.Select(x => x.DimensionOne).ToList());
-    var YValues = Newtonsoft.Json.JsonConvert.SerializeObject(Model.Select(x => x.LstData.Select(w => w.Quantity)).ToList());
-    var label1 = Newtonsoft.Json.JsonConvert.SerializeObject(Model.Select(x => x.StackedDimensionOne).ToList());
+    var assignedticketlst = ViewData["assignedticketlst"] as List<daBoot.Controllers.TicketController.StackedViewModel>;
+    var XLabels = Newtonsoft.Json.JsonConvert.SerializeObject(assignedticketlst.FirstOrDefault().LstData.Select(x => x.DimensionOne).ToList());
+    var YValues = Newtonsoft.Json.JsonConvert.SerializeObject(assignedticketlst.Select(x => x.LstData.Select(w => w.Quantity)).ToList());
+    var label1 = Newtonsoft.Json.JsonConvert.SerializeObject(assignedticketlst.Select(x => x.StackedDimensionOne).ToList());
+    var rolepie = ViewData["rolepie"] as List<daBoot.Controllers.TicketController.ChartSubModel>;
+    var RolePieXLabels = Newtonsoft.Json.JsonConvert.SerializeObject(rolepie.Select(x => x.DimensionOne).ToList());
+    var RolePieYValues = Newtonsoft.Json.JsonConvert.SerializeObject(rolepie.Select(x => x.Quantity).ToList());
+    var submittedticketpie = ViewData["submittedticketpie"] as List<daBoot.Controllers.TicketController.ChartSubModel>;
+    var SubmittedTicketPieXLabels = Newtonsoft.Json.JsonConvert.SerializeObject(submittedticketpie.Select(x => x.DimensionOne).ToList());
+    var SubmittedTicketPieYValues = Newtonsoft.Json.JsonConvert.SerializeObject(submittedticketpie.Select(x => x.Quantity).ToList());
     ViewData["Title"] = "Dashboard";
 }
 
 
-<div style="display: flex !important; height: 50vh">
+<div style="display: flex !important" class="dashboard-container">
     <div class="chart-item">
         <h3>My Assigned Tickets</h3>
         <div style="height: 100%">
@@ -15,16 +22,27 @@
         </div>
     </div>
     <div class="chart-item">
-
+        <h3>My Roles</h3>
+        <div style="height: 100%">
+            <canvas id="rolepiechart" style="border: 2px solid #000000;"> </canvas>
+        </div>
     </div>
 </div>
-
+<div style="display: flex !important" class="dashboard-container">
+    <div class="chart-item">
+        <h3>My Submitted Tickets</h3>
+        <div style="height: 100%">
+            <canvas id="submittedticketpiechart" style="border: 2px solid #000000;"> </canvas>
+        </div>
+    </div>
+</div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.bundle.min.js"></script>
 <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
 <script type="text/javascript">
  $(function() {
-    var ctx = document.getElementById("stackedAssignedTickets").getContext('2d');
+     // populate stacked Assigned tickets
+     var ctx = document.getElementById("stackedAssignedTickets").getContext('2d');
     var XLabels = @Html.Raw(XLabels);
     var YValues = @Html.Raw(YValues);
     var label = @Html.Raw(label1);
@@ -41,7 +59,8 @@
         barChartData.datasets.push({
             label: XLabels[aux],
             backgroundColor: set_rgba(XLabels[aux]),
-            data: data
+            data: data,
+            borderWidth: 0
         });
         aux++;
     });
@@ -53,6 +72,7 @@
                 ticks: {
                     min: 0,
                     beginAtZero: true,
+                    callback: function (value) { if (value % 1 === 0) { return value; } }
                 },
                 stacked: true,
                 gridLines: {
@@ -72,12 +92,6 @@
         }
     };
 
-     function random_rgba() {
-         var o = Math.round,
-             r = Math.random,
-             s = 255;
-         return 'rgba(' + o(r() * s) + ',' + o(r() * s) + ',' + o(r() * s) + ',' + r().toFixed(1) + ')';
-     }
 
      function set_rgba(dimension) {
          if (dimension == "High") {
@@ -88,10 +102,64 @@
              return 'rgba(0, 212, 85, 1)';
          };
      };
-     var myChart = new Chart(ctx, {
+     var assignedticketchart = new Chart(ctx, {
          options: options,
          data: barChartData,
          type: 'bar'
-    });
+     });
+     rolepiechart
+
+     var ctx = document.getElementById("rolepiechart").getContext('2d');
+        var data = {
+                labels: @Html.Raw(RolePieXLabels),
+                datasets: [{
+                    label: "Roles Chart",
+                    backgroundColor: [
+                        'rgba(255, 0, 0, 1)',
+                        'rgba(255, 212, 42, 1)',
+                        'rgba(0, 212, 85, 1)'
+                    ],
+                    borderWidth: 0,
+                    data: @Html.Raw(RolePieYValues)
+                }]
+        };
+
+        var options = {
+            maintainAspectRatio: false
+        };
+
+       var rolepiechart = new  Chart(ctx, {
+            options: options,
+            data: data,
+            type:'doughnut'
+       });
+
+     var ctx = document.getElementById("submittedticketpiechart").getContext('2d');
+        var data = {
+                labels: @Html.Raw(SubmittedTicketPieXLabels),
+                datasets: [{
+                    label: "Submitted Ticket Chart",
+                    backgroundColor: [
+                        'rgba(0, 191, 255, 1)',
+                        'rgba(255, 0, 0, 1)',
+                        'rgba(169, 169, 169, 1)',
+                        'rgba(255, 212, 42, 1)',
+                        'rgba(0, 212, 85, 1)'
+                    ],
+                    borderWidth: 0,
+                    data: @Html.Raw(SubmittedTicketPieYValues)
+                }]
+        };
+
+        var options = {
+            maintainAspectRatio: false
+        };
+
+       var rolepiechart = new  Chart(ctx, {
+            options: options,
+            data: data,
+            type:'doughnut'
+       });
+
  });
 </script>  

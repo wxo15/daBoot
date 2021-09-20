@@ -165,49 +165,53 @@
                     </tr>
                     @foreach (var ticket in Model.Tickets)
                     {
-                        <tr>
-                            <td width="5%" style="vertical-align:middle;">
-                                <p>@ticket.Id</p>
-                            </td>
-                            <td width="45%" style="vertical-align:middle;">
-                                <p><a href="/ticket/@ticket.Id">@ticket.Subject</a></p>
-                            </td>
-                            @if (ticket.Priority.PriorityName == "High")
-                            {
-                                <td width="10%" style="vertical-align: middle; background-color: rgba(255, 0, 0, 1);"></td>
-                            }
-                            else if (ticket.Priority.PriorityName == "Medium")
-                            {
-                                <td width="10%" style="vertical-align: middle; background-color: rgba(255, 212, 42, 1);"></td>
-                            }
-                            else
-                            {
-                                <td width="10%" style="vertical-align: middle; background-color: rgba(0, 212, 85, 1);"></td>
-                            }
+                <tr>
+                    <td width="5%" style="vertical-align:middle;">
+                        <p>@ticket.Id</p>
+                    </td>
+                    <td width="45%" style="vertical-align:middle;">
+                        <p><a href="/ticket/@ticket.Id">@ticket.Subject</a></p>
+                    </td>
+                    @if (ticket.Priority.PriorityName == "High")
+                    {
+                        <td width="10%" style="vertical-align: middle; background-color: rgba(255, 0, 0, 1);"></td>
+                    }
+                    else if (ticket.Priority.PriorityName == "Medium")
+                    {
+                        <td width="10%" style="vertical-align: middle; background-color: rgba(255, 212, 42, 1);"></td>
+                    }
+                    else
+                    {
+                        <td width="10%" style="vertical-align: middle; background-color: rgba(0, 212, 85, 1);"></td>
+                    }
 
-                            @if (ticket.Status.StatusName == "Closed")
-                            {
-                                <td width="10%" style="vertical-align: middle; background-color: DarkGrey;"></td>
-                            }
-                            else if (ticket.Status.StatusName == "Late")
-                            {
-                                <td width="10%" style="vertical-align: middle; background-color: rgba(255, 0, 0, 1);"></td>
-                            }
-                            else if (ticket.Status.StatusName == "Open")
-                            {
-                                <td width="10%" style="vertical-align: middle; background-color: rgba(0, 212, 85, 1);"></td>
-                            }
-                            else
-                            {
-                                <td width="10%" style="vertical-align: middle; background-color: DeepSkyBlue;"></td>
-                            }
-                            <td width="15%" style="vertical-align:middle;">
-                                <p><a href="/profile/@(ticket.Assignee?.Username ?? "")">@((ticket.Assignee?.FirstName ?? "").ToString()) @((ticket.Assignee?.LastName ?? "").ToString())</a></p>
-                            </td>
-                            <td width="15%" style="vertical-align:middle;">
-                                <p>@((ticket.Deadline?.Date.ToString("dd MMM yyyy") ?? "").ToString())</p>
-                            </td>
-                        </tr>
+                    @if (ticket.Status.StatusName == "Closed")
+                    {
+                        <td width="10%" style="vertical-align: middle; background-color: DarkGrey;"></td>
+                    }
+                    else if (ticket.Status.StatusName == "Late")
+                    {
+                        <td width="10%" style="vertical-align: middle; background-color: rgba(255, 0, 0, 1);"></td>
+                    }
+                    else if (ticket.Status.StatusName == "Open")
+                    {
+                        <td width="10%" style="vertical-align: middle; background-color: rgba(0, 212, 85, 1);"></td>
+                    }
+                    else if (ticket.Status.StatusName == "Rejected")
+                    {
+                        <td width="10%" style="vertical-align: middle; background-color: rgba(255, 0, 0, 1);"></td>
+                    }
+                    else
+                    {
+                        <td width="10%" style="vertical-align: middle; background-color: DeepSkyBlue;"></td>
+                    }
+                    <td width="15%" style="vertical-align:middle;">
+                        <p><a href="/profile/@(ticket.Assignee?.Username ?? "")">@((ticket.Assignee?.FirstName ?? "").ToString()) @((ticket.Assignee?.LastName ?? "").ToString())</a></p>
+                    </td>
+                    <td width="15%" style="vertical-align:middle;">
+                        <p>@((ticket.Deadline?.Date.ToString("dd MMM yyyy") ?? "").ToString())</p>
+                    </td>
+                </tr>
                     }
                 </tbody>
             </table>

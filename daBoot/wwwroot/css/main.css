@@ -138,6 +138,7 @@ p {
 .chart-item {
     /*min-width: 400px;*/
     display: flex !important;
+    height: 50vh;
     flex-direction: column;
     padding: 20px;
     flex: 50%

@@ -1,5 +1,6 @@
 ﻿using daBoot.Data;
 using daBoot.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -18,6 +19,22 @@ namespace daBoot.Controllers
             _db = db;
         }
 
+        public class ChartSubModel
+        {
+            public string DimensionOne { get; set; }
+            public int Quantity { get; set; }
+        }
+
+        public class StackedViewModel
+        {
+            public string StackedDimensionOne { get; set; }
+            public List<ChartSubModel> LstData { get; set; }
+        }
+
+        public class DashboardModel
+        {
+            public List<StackedViewModel> AssignedTickets { get; set; }
+        }
 
         [HttpGet("ticket/{ticketid}")]
         public async Task<IActionResult> Index([FromRoute] int ticketid)
@@ -51,8 +68,9 @@ namespace daBoot.Controllers
                                             join role in _db.Roles on upr.RoleId equals role.Id
                                             where proj.Id == thisticket.ProjectId && role.Id <= 2 && account != thisticket.Assignee
                                             select account).OrderBy(u => u.FirstName + " " + u.LastName);
+                    // cannot be Late, as thats determined by deadline
                     ViewData["StatusCandidate"] = (from status in _db.Status
-                                               where status !=thisticket.Status
+                                               where status !=thisticket.Status && status.StatusName != "Late"
                                                select status).OrderBy(u => u.Id);
                     ViewData["UserRole"] = (from upr in _db.UserProjects
                                             join account in _db.Users on upr.UserId equals account.Id
@@ -92,6 +110,7 @@ namespace daBoot.Controllers
                     ticket.AssignedDateTime = DateTime.Now;
                     ticket.Deadline = deadline;
                     _db.SaveChanges();
+                    UpdateStatusOpenLate();
                 }
             }
             return RedirectToAction("Index", new { ticketid });
@@ -111,6 +130,7 @@ namespace daBoot.Controllers
                     ticket.StatusUpdated = DateTime.Now;
                     ticket.StatusId = statusid;
                     _db.SaveChanges();
+                    UpdateStatusOpenLate();
                 }
             }
             return RedirectToAction("Index", new { ticketid });
@@ -172,67 +192,107 @@ namespace daBoot.Controllers
             return RedirectToAction("Index", new { ticketid });
         }
 
+        [Authorize]
         [HttpGet("dashboard")]
-        public IActionResult Dashboard()
+        public async Task<IActionResult> Dashboard()
         {
-            Random rnd = new();
-            List<StackedViewModel> lstModel = new();
-            StackedViewModel openobj = new StackedViewModel {
-                StackedDimensionOne = "Open",
-                LstData = new List<SimpleReportViewModel>() {
-                            new SimpleReportViewModel()
-                            {
-                                DimensionOne = "High",
-                                Quantity = rnd.Next(10)
-                            },
-                            new SimpleReportViewModel()
-                            {
-                                DimensionOne = "Medium",
-                                Quantity = rnd.Next(10)
-                            },
-                            new SimpleReportViewModel()
-                            {
-                                DimensionOne = "Low",
-                                Quantity = rnd.Next(10)
-                            }
-                    }
-            };
-            StackedViewModel lateobj = new StackedViewModel
+            
+            
+            UpdateStatusOpenLate();
+            var ownusername = User.Claims.FirstOrDefault(c => c.Type == "username").Value;
+            var own = await _db.Users.FirstOrDefaultAsync(u => u.Username == ownusername);
+            // assigned ticket stacked bar chart
+            List<StackedViewModel> assignedticketlst = new();
+            StackedViewModel openobj = new()
+            { StackedDimensionOne = "Open", LstData = new List<ChartSubModel>() {
+                            new ChartSubModel()
+                            {DimensionOne = "High", Quantity = _db.Tickets.Where(u => u.Assignee == own && u.Status.StatusName == "Open" && u.Priority.PriorityName == "High").Count() },
+                            new ChartSubModel()
+                            {DimensionOne = "Medium", Quantity = _db.Tickets.Where(u => u.Assignee == own && u.Status.StatusName == "Open" && u.Priority.PriorityName == "Medium").Count() },
+                            new ChartSubModel()
+                            {DimensionOne = "Low", Quantity = _db.Tickets.Where(u => u.Assignee == own && u.Status.StatusName == "Open" && u.Priority.PriorityName == "Low").Count() }
+                    } };
+            StackedViewModel lateobj = new()
+            { StackedDimensionOne = "Late", LstData = new List<ChartSubModel>() {
+                            new ChartSubModel()
+                            {DimensionOne = "High", Quantity = _db.Tickets.Where(u => u.Assignee == own && u.Status.StatusName == "Late" && u.Priority.PriorityName == "High").Count() },
+                            new ChartSubModel()
+                            {DimensionOne = "Medium", Quantity = _db.Tickets.Where(u => u.Assignee == own && u.Status.StatusName == "Late" && u.Priority.PriorityName == "Medium").Count() },
+                            new ChartSubModel()
+                            {DimensionOne = "Low", Quantity = _db.Tickets.Where(u => u.Assignee == own && u.Status.StatusName == "Late" && u.Priority.PriorityName == "Low").Count() }
+                    } };
+            assignedticketlst.Add(openobj);
+            assignedticketlst.Add(lateobj);
+
+            // role pie chart
+            var rolepiemodel = new List<ChartSubModel>();
+            rolepiemodel.Add(new ChartSubModel
             {
-                StackedDimensionOne = "Late",
-                LstData = new List<SimpleReportViewModel>() {
-                            new SimpleReportViewModel()
-                            {
-                                DimensionOne = "High",
-                                Quantity = rnd.Next(10)
-                            },
-                            new SimpleReportViewModel()
-                            {
-                                DimensionOne = "Medium",
-                                Quantity = rnd.Next(10)
-                            },
-                            new SimpleReportViewModel()
-                            {
-                                DimensionOne = "Low",
-                                Quantity = rnd.Next(10)
-                            }
-                    }
-            };
-            lstModel.Add(openobj);
-            lstModel.Add(lateobj);
-            return View(lstModel);  
+                DimensionOne = "Lead",
+                Quantity = _db.UserProjects.Where(u => u.User == own && u.Role.RoleName == "Lead").Count()
+            });
+            rolepiemodel.Add(new ChartSubModel
+            {
+                DimensionOne = "Dev",
+                Quantity = _db.UserProjects.Where(u => u.User == own && u.Role.RoleName == "Dev").Count()
+            });
+            rolepiemodel.Add(new ChartSubModel
+            {
+                DimensionOne = "Tester",
+                Quantity = _db.UserProjects.Where(u => u.User == own && u.Role.RoleName == "Tester").Count()
+            });
+            // submitted ticket
+            var submittedmodel = new List<ChartSubModel>();
+            submittedmodel.Add(new ChartSubModel
+            {
+                DimensionOne = "Submitted",
+                Quantity = own.SubmittedTickets.Where(u => u.Status.StatusName == "Submitted").Count()
+            });
+            submittedmodel.Add(new ChartSubModel
+            {
+                DimensionOne = "Rejected",
+                Quantity = own.SubmittedTickets.Where(u => u.Status.StatusName == "Rejected").Count()
+            });
+            submittedmodel.Add(new ChartSubModel
+            {
+                DimensionOne = "Closed",
+                Quantity = own.SubmittedTickets.Where(u => u.Status.StatusName == "Closed").Count()
+            });
+            submittedmodel.Add(new ChartSubModel
+            {
+                DimensionOne = "Late",
+                Quantity = own.SubmittedTickets.Where(u => u.Status.StatusName == "Late").Count()
+            });
+            submittedmodel.Add(new ChartSubModel
+            {
+                DimensionOne = "Open",
+                Quantity = own.SubmittedTickets.Where(u => u.Status.StatusName == "Open").Count()
+            });
+            ViewData["assignedticketlst"] = assignedticketlst;
+            ViewData["rolepie"] = rolepiemodel;
+            ViewData["submittedticketpie"] = submittedmodel;
+            return View(assignedticketlst);  
        }  
 
-        public class SimpleReportViewModel
-        {
-            public string DimensionOne { get; set; }
-            public int Quantity { get; set; }
-        }
 
-        public class StackedViewModel
+        public void UpdateStatusOpenLate()
         {
-            public string StackedDimensionOne { get; set; }
-            public List<SimpleReportViewModel> LstData { get; set; }
+            DateTime dtnow = DateTime.Now;
+            int openid = _db.Status.FirstOrDefault(u => u.StatusName == "Open").Id;
+            int lateid = _db.Status.FirstOrDefault(u => u.StatusName == "Late").Id;
+            foreach (var ticket in _db.Tickets.Include("Status").Where(u => u.Status != null).ToList())
+            {
+                if (ticket.Status.StatusName == "Open" && ticket.Deadline < dtnow)
+                {
+                    ticket.StatusId = lateid;
+                    _db.SaveChanges();
+                }
+                if (ticket.Status.StatusName == "Late" && ticket.Deadline > dtnow)
+                {
+                    ticket.StatusId = openid;
+                    _db.SaveChanges();
+                }
+            };
         }
     }
 }

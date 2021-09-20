@@ -43,23 +43,18 @@
 
     <header id="header">
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <button id="sidebaropen" class="openbtn" onclick="openNav()"><i class="fa fa-arrow-right"></i></button>
             <div class="container">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">daBoot</a>
-                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                <button id="sidebaropen" class="openbtn mr-3" onclick="openNav()"><i class="fa fa-arrow-right"></i></button>
+                <a class="navbar-brand mr-3" asp-area="" asp-controller="Home" asp-action="Index">daBoot</a>
+                <a href="" class="notification mr-3">
+                    <i class="fa fa-bell"></i>
+                    <span class="badge">3</span>
+                </a>
+                <button class="navbar-toggler mr-3" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <!--<ul class="navbar-nav flex-grow-1">
-        <li class="nav-item">
-            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link text-dark" asp-area="" asp-controller="Item" asp-action="Index">My Borrowed Items</a>
-        </li>
-    </ul>-->
-
+                <div class="navbar-collapse collapse d-sm-inline-flex" style="justify-content: flex-end;">
                     <form action="/search" method="get">
                         <div class="search-container input-group">
                             <input type="search" class="form-control" placeholder="Search..." name="searchstr" id="searchform">
@@ -70,10 +65,7 @@
                             </div>
                         </div>
                     </form>
-                    <a href="" class="notification">
-                        <i class="fa fa-bell"></i>
-                        <span class="badge">3</span>
-                    </a>
+
                 </div>
 
             </div>
