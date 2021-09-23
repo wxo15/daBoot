@@ -17,7 +17,7 @@
         <div class="text-light" style="height:40vh; text-align:center">
             @if (User.Identity.IsAuthenticated)
             {
-            <h3>Welcome, @User.Claims.FirstOrDefault(c => c.Type == System.Security.Claims.ClaimTypes.Name).Value</h3>
+                <h3>Welcome, @User.Claims.FirstOrDefault(c => c.Type == System.Security.Claims.ClaimTypes.Name).Value</h3>
                 <img src=@User.Claims.FirstOrDefault(c => c.Type == "profpic").Value
                      alt="profile pic" style="object-fit: cover; width: 20vh; height: 20vh; overflow: hidden; border-radius:10vh; background-color:white">
             }
@@ -27,15 +27,13 @@
             }
         </div>
         <div class="border-top" style="list-style-type: none; padding: 0; margin: 0; height:50vh;">
-            @if (User.Identity.IsAuthenticated){
+            @if (User.Identity.IsAuthenticated)
+            {
                 <a class="nav-link text-light sidebar-item" style="width:100%;" href="/dashboard">Dashboard</a>
                 <a class="nav-link text-light sidebar-item" style="width:100%;" asp-controller="Project" asp-action="ProjectList">Projects & Roles</a>
                 <a class="nav-link text-light sidebar-item" style="width:100%;" href="/profile">Your Profile</a>
                 <a class="nav-link text-light sidebar-item" style="width:100%;" asp-controller="Profile" asp-action="TeamMemberList">Team Members</a>
-                <div class="row notification">
-                    <a class="nav-link text-light sidebar-item" style="width:100%;">Notifications</a>
-                    <span class="badge">3</span>
-                </div>
+                <a class="nav-link text-light sidebar-item notification" style="width:100%;">Notifications<span class="badge" id="sidebarnotificationcount"></span></a>
                 <a class="nav-link text-light sidebar-item" style="width:100%;" asp-controller="Home" asp-action="Logout">Logout</a>
             }
         </div>
@@ -48,7 +46,7 @@
                 <a class="navbar-brand mr-3" asp-area="" asp-controller="Home" asp-action="Index">daBoot</a>
                 <a href="" class="notification mr-3">
                     <i class="fa fa-bell"></i>
-                    <span class="badge">3</span>
+                    <span class="badge" id="navbarnotificationcount"></span>
                 </a>
                 <button class="navbar-toggler mr-3" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
@@ -78,7 +76,7 @@
             </main>
         </div>
     </div>
-        
+
     <footer id="footer" class="border-top footer text-muted">
         <div class="container">
             &copy; 2021 - daBoot - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
@@ -88,6 +86,26 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script type="text/javascript">
+    $(function() {
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", "/notification/getcount", true);
+        xhr.onreadystatechange = function () {
+            if (this.readyState != 4) return;
+            if (this.status == 200) {
+                if (this.response > 0) {
+                    document.getElementById("sidebarnotificationcount").innerHTML = this.response.toString();
+                    document.getElementById("navbarnotificationcount").innerHTML = this.response.toString();
+                }
+            }
+        };
+        xhr.send();
+    });
+    </script>
+
+
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

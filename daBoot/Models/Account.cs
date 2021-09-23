@@ -27,7 +27,7 @@ namespace daBoot.Models
         public virtual ICollection<Ticket> SubmittedTickets { get; set; }
         public virtual ICollection<Ticket> TicketsToOthers { get; set; }
         public virtual ICollection<Comment> Comments { get; set; }
-
+        public virtual ICollection<Notification> Notifications { get; set; }
 
 
         /* Username + password constructor*/

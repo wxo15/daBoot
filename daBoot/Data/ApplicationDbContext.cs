@@ -24,6 +24,7 @@ namespace daBoot.Data
         public DbSet<Priority> Priority { get; set; }
         public DbSet<Status> Status { get; set; }
         public DbSet<Comment> Comments { get; set; }
+        public DbSet<Notification> Notifications { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Relation>()
@@ -96,6 +97,11 @@ namespace daBoot.Data
                         .HasOne(e => e.Ticket)
                         .WithMany(e => e.Comments)
                         .HasForeignKey(e => e.TicketId);
+
+            modelBuilder.Entity<Notification>()
+                        .HasOne(e => e.NotificationUser)
+                        .WithMany(e => e.Notifications)
+                        .HasForeignKey(e => e.UserId);
         }
     }
 }
