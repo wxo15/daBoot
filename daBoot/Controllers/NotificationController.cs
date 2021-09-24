@@ -1,5 +1,7 @@
 ﻿using daBoot.Data;
+using daBoot.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,9 +18,17 @@ namespace daBoot.Controllers
             _db = db;
         }
 
-        public IActionResult Index()
+        [HttpGet("mynotifications")]
+        public async Task<IActionResult> NotificationList()
         {
-            return View();
+            IEnumerable<Notification> objList = null;
+            if (User.Identity.IsAuthenticated)
+            {
+                var ownusername = User.Claims.FirstOrDefault(c => c.Type == "username").Value;
+                var own = await _db.Users.FirstOrDefaultAsync(u => u.Username == ownusername);
+                objList = _db.Notifications.Where(u => u.NotificationUser == own).OrderByDescending(u => u.NotificationTimeStamp);
+            }
+            return View(objList);
         }
 
         [HttpPost("notification/getcount")]
@@ -35,6 +45,79 @@ namespace daBoot.Controllers
             {
                 return 0;
             }
+        }
+
+        [HttpPost("notification/{readunread}/{notificationid}")]
+        public async Task<string> ReadUnread(string readunread, int notificationid)
+        {
+            if (User.Identity.IsAuthenticated && (readunread == "read" || readunread == "unread"))
+            {
+                var ownusername = User.Claims.FirstOrDefault(c => c.Type == "username").Value;
+                var own = await _db.Users.FirstOrDefaultAsync(u => u.Username == ownusername);
+                var target = _db.Notifications.Find(notificationid);
+                
+                if (target != null && target.NotificationUser == own)
+                {
+                    if (target.IsRead && readunread == "unread")
+                    {
+                        target.IsRead = false;
+                    }
+                    else if (!target.IsRead && readunread == "read")
+                    {
+                        target.IsRead = true;
+                    }
+                    _db.SaveChanges();
+                    return "Success";
+                }
+            }
+            return "Failed";
+        }
+
+        [HttpPost("notification/readall")]
+        public async Task<string> ReadAll()
+        {
+            if (User.Identity.IsAuthenticated)
+            {
+                var ownusername = User.Claims.FirstOrDefault(c => c.Type == "username").Value;
+                var own = await _db.Users.FirstOrDefaultAsync(u => u.Username == ownusername);
+                var targets = _db.Notifications.Where(u => u.NotificationUser == own && u.IsRead == false);
+
+                foreach (var target in targets)
+                {
+                    target.IsRead = true;
+                }
+                _db.SaveChanges();
+                return "Success";
+            }
+            return "Failed";
+        }
+
+        [HttpPost("notification/posted/{notificationid}")]
+        public async Task<string> Posted(int notificationid)
+        {
+            if (User.Identity.IsAuthenticated)
+            {
+                var ownusername = User.Claims.FirstOrDefault(c => c.Type == "username").Value;
+                var own = await _db.Users.FirstOrDefaultAsync(u => u.Username == ownusername);
+                var target = _db.Notifications.Find(notificationid);
+
+                if (target != null && target.NotificationUser == own)
+                {
+                    int startIndex = 0;
+                    if (target.NotificationString.Length - 18 > 0) 
+                    {
+                        startIndex = target.NotificationString.Length - 18;
+                    }
+                    if (target.NotificationString.Substring(startIndex) != "[Action performed]")
+                    {
+                        target.NotificationString += " [Action performed]";
+                        target.PostAction = null;
+                    }
+                    _db.SaveChanges();
+                    return "Success";
+                }
+            }
+            return "Failed";
         }
 
     }

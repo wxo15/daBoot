@@ -1,0 +1,130 @@
+﻿@model IEnumerable<daBoot.Models.Notification>
+
+@{
+    ViewData["Title"] = "Your Notifications";
+}
+
+<script>
+    function readunread(action, notificationid) {
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", "/notification/" + action + "/" + notificationid, true);
+        xhr.onreadystatechange = function () {
+            if (this.readyState != 4) return;
+            if (this.status == 200) {
+                if (this.responseText == "Success") {
+                    document.location.reload(true);
+                }
+            }
+        };
+        xhr.send();
+    }
+
+    function readall() {
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", "/notification" + "/readall", true);
+        xhr.onreadystatechange = function () {
+            if (this.readyState != 4) return;
+            if (this.status == 200) {
+                if (this.responseText == "Success") {
+                    document.location.reload(true);
+                }
+            }
+        };
+        xhr.send();
+    }
+
+    function POSTactiontaken(notificationid) {
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", "/notification" + "/posted/"+notificationid, true);
+        xhr.onreadystatechange = function () {
+            if (this.readyState != 4) return;
+            if (this.status == 200) {
+                if (this.responseText == "Success") {
+                    document.location.reload(true);
+                }
+            }
+        };
+        xhr.send();
+    }
+
+    function action(POSTaction, notificationid) {
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", POSTaction, true);
+        xhr.onreadystatechange = function () {
+            if (this.readyState != 4) return;
+            if (this.status == 200) {
+                if (this.responseText == "Success") {
+                    POSTactiontaken(notificationid);
+                }
+            }
+        };
+        xhr.send();
+    }
+</script>
+
+
+<div class="container p-3">
+    <div class="text-center">
+        <h1 class="display-4">Your Notifications</h1>
+    </div>
+
+    @if (Model != null && Model.Count() > 0)
+    {
+
+        <button class="btn btn-primary m-4" onclick="readall()">Mark All as Read</button>
+
+        <table class="table table-bordered" style="width:100%">
+            <tbody>
+                @foreach (var notification in Model)
+                {
+
+                    @if (notification.IsRead)
+                    {
+                        <tr class="table-secondary">
+                            <td width="80%" style="vertical-align:middle;">
+                                <span style="float:left;">
+                                    <strong><a href="@notification.GetAction">@notification.NotificationString</a></strong>
+                                </span>
+                                <span style="float:right;">
+                                    <em>@notification.NotificationTimeStamp.ToString("dd MMM yyyy hh:mm tt")</em>
+                                </span>
+                            </td>
+                            <td width="20%" style="vertical-align:middle;">
+                                @if (notification.PostAction != null)
+                                {
+                                    <button title="Perform action" class="btn btn-success" onclick="action('@notification.PostAction', @notification.Id)"><i class="icon-check-sign"></i></button>
+                                }
+                                <button title="Mark as Unread" class="btn btn-secondary" onclick="readunread('unread',@notification.Id)"><i class="icon-eye-close"></i></button>
+                            </td>
+                        </tr>
+                    }
+                    else
+                    {
+                        <tr>
+                            <td width="80%" style="vertical-align:middle;">
+                                <span style="float:left;">
+                                    <strong><a href="@notification.GetAction">@notification.NotificationString</a></strong>
+                                </span>
+                                <span style="float:right;">
+                                    <em>@notification.NotificationTimeStamp.ToString("dd MMM yyyy hh:mm tt")</em>
+                                </span>
+                            </td>
+                            <td width="20%" style="vertical-align:middle;">
+                                @if (notification.PostAction != null)
+                                {
+                                    <button title="Perform action" class="btn btn-success" onclick="action('@notification.PostAction', @notification.Id)"><i class="icon-check-sign"></i></button>
+                                }
+                                <button title="Mark as read" class="btn btn-secondary" onclick="readunread('read',@notification.Id)"><i class="icon-eye-open"></i></button>
+                            </td>
+                        </tr>
+                    }
+
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <p>You don't have any notification.</p>
+    }
+</div>

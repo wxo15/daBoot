@@ -18,13 +18,16 @@ namespace daBoot.Models
         public bool IsRead { get; set; }
         [Required]
         public int UserId { get; set; }
+        [Required]
+        public DateTime NotificationTimeStamp { get; set; }
         public virtual Account NotificationUser { get; set; }
 
-        public Notification(string notificationstr, int userid)
+        public Notification(string notificationstr, int userid, DateTime notificationtimestamp)
         {
             NotificationString = notificationstr;
             UserId = userid;
             IsRead = false;
+            NotificationTimeStamp = notificationtimestamp;
         }
 
         public Notification()

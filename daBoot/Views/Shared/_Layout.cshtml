@@ -33,7 +33,7 @@
                 <a class="nav-link text-light sidebar-item" style="width:100%;" asp-controller="Project" asp-action="ProjectList">Projects & Roles</a>
                 <a class="nav-link text-light sidebar-item" style="width:100%;" href="/profile">Your Profile</a>
                 <a class="nav-link text-light sidebar-item" style="width:100%;" asp-controller="Profile" asp-action="TeamMemberList">Team Members</a>
-                <a class="nav-link text-light sidebar-item notification" style="width:100%;">Notifications<span class="badge" id="sidebarnotificationcount"></span></a>
+                <a class="nav-link text-light sidebar-item notification" style="width:100%;" asp-controller="Notification" asp-action="NotificationList">Notifications<span class="badge" id="sidebarnotificationcount"></span></a>
                 <a class="nav-link text-light sidebar-item" style="width:100%;" asp-controller="Home" asp-action="Logout">Logout</a>
             }
         </div>
@@ -44,10 +44,13 @@
             <div class="container">
                 <button id="sidebaropen" class="openbtn mr-3" onclick="openNav()"><i class="fa fa-arrow-right"></i></button>
                 <a class="navbar-brand mr-3" asp-area="" asp-controller="Home" asp-action="Index">daBoot</a>
-                <a href="" class="notification mr-3">
-                    <i class="fa fa-bell"></i>
-                    <span class="badge" id="navbarnotificationcount"></span>
-                </a>
+                @if (User.Identity.IsAuthenticated)
+                {
+                    <a class="notification mr-3" asp-controller="Notification" asp-action="NotificationList">
+                        <i class="fa fa-bell"></i>
+                        <span class="badge" id="navbarnotificationcount"></span>
+                    </a>
+                }
                 <button class="navbar-toggler mr-3" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>

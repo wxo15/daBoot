@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 using MySql.EntityFrameworkCore.Metadata;
 
 namespace daBoot.Migrations
@@ -17,7 +18,8 @@ namespace daBoot.Migrations
                     PostAction = table.Column<string>(type: "text", nullable: true),
                     GetAction = table.Column<string>(type: "text", nullable: true),
                     IsRead = table.Column<bool>(type: "tinyint(1)", nullable: false),
-                    UserId = table.Column<int>(type: "int", nullable: false)
+                    UserId = table.Column<int>(type: "int", nullable: false),
+                    NotificationTimeStamp = table.Column<DateTime>(type: "datetime", nullable: false)
                 },
                 constraints: table =>
                 {
