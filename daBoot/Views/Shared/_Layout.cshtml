@@ -40,10 +40,10 @@
     </div>
 
     <header id="header">
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3"  style="transition:0.5s">
             <div class="container">
-                <button id="sidebaropen" class="openbtn mr-3" onclick="openNav()"><i class="fa fa-arrow-right"></i></button>
-                <a class="navbar-brand mr-3" asp-area="" asp-controller="Home" asp-action="Index">daBoot</a>
+                <button id="sidebaropen" class="openbtn mr-2" onclick="openNav()"><i class="fa fa-arrow-right"></i></button>
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">daBoot</a>
                 @if (User.Identity.IsAuthenticated)
                 {
                     <a class="notification mr-3" asp-controller="Notification" asp-action="NotificationList">
@@ -51,11 +51,11 @@
                         <span class="badge" id="navbarnotificationcount"></span>
                     </a>
                 }
-                <button class="navbar-toggler mr-3" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation"  style="transition:0.5s">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex" style="justify-content: flex-end;">
+                <div class="navbar-collapse collapse d-sm-inline-flex" style="justify-content: flex-end;" style="transition:0.5s">
                     <form action="/search" method="get">
                         <div class="search-container input-group">
                             <input type="search" class="form-control" placeholder="Search..." name="searchstr" id="searchform">

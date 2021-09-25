@@ -109,6 +109,12 @@ namespace daBoot.Controllers
                     ticket.AssigneeId = target.Id;
                     ticket.AssignedDateTime = DateTime.Now;
                     ticket.Deadline = deadline;
+                    // Update assignee
+                    _db.Notifications.Add(new Notification("<a href=\"/profile/" + own.Username + "\"> " + own.FirstName + " " + own.LastName + "</a> assigned you ticket: <a href=\"/ticket/" + ticketid + "\"> (ID" + ticketid + ") " + _db.Tickets.Find(ticketid).Subject + "</a>. Deadline: " + deadline.ToString("dd MMM yyyy"),
+                        userid,
+                        null,
+                        null
+                    ));
                     _db.SaveChanges();
                     UpdateStatusOpenLate();
                 }
@@ -129,6 +135,12 @@ namespace daBoot.Controllers
                 {
                     ticket.StatusUpdated = DateTime.Now;
                     ticket.StatusId = statusid;
+                    // Update lead
+                    _db.Notifications.Add(new Notification("<a href=\"/profile/" + own.Username + "\"> " + own.FirstName + " " + own.LastName + "</a> updated status to " + _db.Status.Find(statusid).StatusName + " for ticket: <a href=\"/ticket/" + ticketid + "\"> (ID" + ticketid + ") " + _db.Tickets.Find(ticketid).Subject + "</a>.",
+                        _db.UserProjects.FirstOrDefault(u => u.Project == ticket.Project && u.RoleId == 1).UserId,
+                        null,
+                        null
+                    ));
                     _db.SaveChanges();
                     UpdateStatusOpenLate();
                 }
@@ -160,6 +172,12 @@ namespace daBoot.Controllers
                 }
                 Ticket ticket = new Ticket(projectid, subject, (int)priorityid, description, userid);
                 _db.Tickets.Add(ticket);
+                // Update lead
+                _db.Notifications.Add(new Notification("A ticket is created: <a href=\"/ticket/" + ticket.Id + "\"> (ID" + ticket.Id + ") " + subject + "</a>. Review it.",
+                    _db.UserProjects.FirstOrDefault(u => u.Project == ticket.Project && u.RoleId == 1).UserId,
+                    null,
+                    null
+                ));
                 _db.SaveChanges();
             }
             return Redirect("~/thankyou");
@@ -186,6 +204,15 @@ namespace daBoot.Controllers
                 {
                     Comment comment = new(userid, ticketid, commentstr);
                     _db.Comments.Add(comment);
+                    // Update assignee if assigned
+                    if (ticket.AssigneeId != null)
+                    {
+                        _db.Notifications.Add(new Notification("<a href=\"/profile/" + own.Username + "\"> " + own.FirstName + " " + own.LastName + "</a> commented on ticket: <a href=\"/ticket/" + ticketid + "\"> (ID" + ticketid + ") " + _db.Tickets.Find(ticketid).Subject + "</a>.",
+                            (int)ticket.AssigneeId,
+                            null,
+                            null
+                        ));
+                    }
                     _db.SaveChanges();
                 }
             }
@@ -242,32 +269,34 @@ namespace daBoot.Controllers
                 Quantity = _db.UserProjects.Where(u => u.User == own && u.Role.RoleName == "Tester").Count()
             });
             // submitted ticket
-            var submittedmodel = new List<ChartSubModel>();
-            submittedmodel.Add(new ChartSubModel
+            List<ChartSubModel> submittedmodel = new();
+
+            if (own.SubmittedTickets == null)
             {
-                DimensionOne = "Submitted",
-                Quantity = own.SubmittedTickets.Where(u => u.Status.StatusName == "Submitted").Count()
-            });
-            submittedmodel.Add(new ChartSubModel
+                submittedmodel.Add(new ChartSubModel
+                { DimensionOne = "Submitted", Quantity = 0 });
+                submittedmodel.Add(new ChartSubModel
+                { DimensionOne = "Rejected", Quantity = 0 });
+                submittedmodel.Add(new ChartSubModel
+                { DimensionOne = "Closed", Quantity = 0 });
+                submittedmodel.Add(new ChartSubModel
+                { DimensionOne = "Late", Quantity = 0 });
+                submittedmodel.Add(new ChartSubModel
+                { DimensionOne = "Open", Quantity = 0 });
+            }
+            else
             {
-                DimensionOne = "Rejected",
-                Quantity = own.SubmittedTickets.Where(u => u.Status.StatusName == "Rejected").Count()
-            });
-            submittedmodel.Add(new ChartSubModel
-            {
-                DimensionOne = "Closed",
-                Quantity = own.SubmittedTickets.Where(u => u.Status.StatusName == "Closed").Count()
-            });
-            submittedmodel.Add(new ChartSubModel
-            {
-                DimensionOne = "Late",
-                Quantity = own.SubmittedTickets.Where(u => u.Status.StatusName == "Late").Count()
-            });
-            submittedmodel.Add(new ChartSubModel
-            {
-                DimensionOne = "Open",
-                Quantity = own.SubmittedTickets.Where(u => u.Status.StatusName == "Open").Count()
-            });
+                submittedmodel.Add(new ChartSubModel
+                { DimensionOne = "Submitted", Quantity = own.SubmittedTickets.Where(u => u.Status.StatusName == "Submitted").Count() });
+                submittedmodel.Add(new ChartSubModel
+                { DimensionOne = "Rejected", Quantity = own.SubmittedTickets.Where(u => u.Status.StatusName == "Rejected").Count() });
+                submittedmodel.Add(new ChartSubModel
+                { DimensionOne = "Closed", Quantity = own.SubmittedTickets.Where(u => u.Status.StatusName == "Closed").Count() });
+                submittedmodel.Add(new ChartSubModel
+                { DimensionOne = "Late", Quantity = own.SubmittedTickets.Where(u => u.Status.StatusName == "Late").Count() });
+                submittedmodel.Add(new ChartSubModel
+                { DimensionOne = "Open", Quantity = own.SubmittedTickets.Where(u => u.Status.StatusName == "Open").Count() });
+            }
             ViewData["assignedticketlst"] = assignedticketlst;
             ViewData["rolepie"] = rolepiemodel;
             ViewData["submittedticketpie"] = submittedmodel;
@@ -285,6 +314,12 @@ namespace daBoot.Controllers
                 if (ticket.Status.StatusName == "Open" && ticket.Deadline < dtnow)
                 {
                     ticket.StatusId = lateid;
+                    // Update assignee
+                    _db.Notifications.Add(new Notification("A ticket is Late: <a href=\"/ticket/" + ticket.Id + "\"> (ID" + ticket.Id + ") " + _db.Tickets.Find(ticket.Id).Subject + "</a>.",
+                        (int)ticket.AssigneeId,
+                        null,
+                        null
+                    ));
                     _db.SaveChanges();
                 }
                 if (ticket.Status.StatusName == "Late" && ticket.Deadline > dtnow)

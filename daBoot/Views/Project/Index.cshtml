@@ -156,8 +156,7 @@
             <table class="table table-bordered table-striped" style="width:100%">
                 <tbody>
                     <tr>
-                        <th width="5%" style="vertical-align:middle;">Id</th>
-                        <th width="45%" style="vertical-align:middle;">Subject</th>
+                        <th width="50%" style="vertical-align:middle;">Subject</th>
                         <th width="10%" style="vertical-align: middle;">Priority</th>
                         <th width="10%" style="vertical-align: middle;">Status</th>
                         <th width="15%" style="vertical-align:middle;">Assigned To</th>
@@ -166,9 +165,6 @@
                     @foreach (var ticket in Model.Tickets)
                     {
                 <tr>
-                    <td width="5%" style="vertical-align:middle;">
-                        <p>@ticket.Id</p>
-                    </td>
                     <td width="45%" style="vertical-align:middle;">
                         <p><a href="/ticket/@ticket.Id">@ticket.Subject</a></p>
                     </td>

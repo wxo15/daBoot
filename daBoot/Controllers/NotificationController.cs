@@ -1,5 +1,6 @@
 ﻿using daBoot.Data;
 using daBoot.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -18,6 +19,7 @@ namespace daBoot.Controllers
             _db = db;
         }
 
+        [Authorize]
         [HttpGet("mynotifications")]
         public async Task<IActionResult> NotificationList()
         {

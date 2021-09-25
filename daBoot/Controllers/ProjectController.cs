@@ -104,10 +104,20 @@ namespace daBoot.Controllers
                     {
                         ownrole.RoleId += 1;
                         targetrole.RoleId -= 1;
+                        _db.Notifications.Add(new Notification("<a href=\"/profile/" + own.Username + "\"> " + own.FirstName + " " + own.LastName + "</a> promoted you to " + _db.Roles.Find(targetrole.RoleId).RoleName + " for project: <a href=\"/project/" + projectid + "\"> " + _db.Projects.Find(projectid).Name + "</a>.",
+                            userid,
+                            null,
+                            null
+                        ));
                     }
                     else if (ownrole.RoleId < targetrole.RoleId)
                     {
                         targetrole.RoleId -= 1;
+                        _db.Notifications.Add(new Notification("<a href=\"/profile/" + own.Username + "\"> " + own.FirstName + " " + own.LastName + "</a> promoted you to " + _db.Roles.Find(targetrole.RoleId).RoleName + " for project: <a href=\"/project/" + projectid + "\"> " + _db.Projects.Find(projectid).Name + "</a>.",
+                            userid,
+                            null,
+                            null
+                        ));
                     }
                     _db.SaveChanges();
                     return "Success";
@@ -136,10 +146,20 @@ namespace daBoot.Controllers
                     if (ownrole.RoleId < targetrole.RoleId && targetrole.RoleId == 3)
                     {
                         _db.UserProjects.Remove(targetrole);
+                        _db.Notifications.Add(new Notification("<a href=\"/profile/" + own.Username + "\"> " + own.FirstName + " " + own.LastName + "</a> removed you from project: <a href=\"/project/" + projectid + "\"> " + _db.Projects.Find(projectid).Name + "</a>.",
+                            userid,
+                            null,
+                            null
+                        ));
                     }
                     else if (ownrole.RoleId < targetrole.RoleId)
                     {
                         targetrole.RoleId += 1;
+                        _db.Notifications.Add(new Notification("<a href=\"/profile/" + own.Username + "\"> " + own.FirstName + " " + own.LastName + "</a> demoted you to " + _db.Roles.Find(targetrole.RoleId).RoleName + " for project: <a href=\"/project/" + projectid + "\"> " + _db.Projects.Find(projectid).Name + "</a>.",
+                            userid,
+                            null,
+                            null
+                        ));
                     }
                     _db.SaveChanges();
                     return "Success";
@@ -169,6 +189,11 @@ namespace daBoot.Controllers
                 {
                     var newUserProject = new UserProject(userid, projectid, 3); 
                     _db.UserProjects.Add(newUserProject);
+                    _db.Notifications.Add(new Notification("<a href=\"/profile/" + own.Username + "\"> " + own.FirstName + " " + own.LastName + "</a> invited you to project: <a href=\"/project/" + projectid + "\"> " + _db.Projects.Find(projectid).Name + "</a>.",
+                        userid,
+                        null,
+                        null
+                    ));
                     _db.SaveChanges();
                     return "Success";
                 }

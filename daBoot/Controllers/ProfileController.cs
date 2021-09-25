@@ -68,7 +68,20 @@ namespace daBoot.Controllers
             {
                 var username = User.Claims.FirstOrDefault(c => c.Type == "username").Value;
                 var user = await _db.Users.FirstOrDefaultAsync(u => u.Username == username);
-                _db.Relations.Add(new Models.Relation {UserId = user.Id, TeamMemberId = userid });
+                Relation obj = new () { UserId = user.Id, TeamMemberId = userid };
+                if (!_db.Relations.Contains(obj))
+                {
+                    _db.Relations.Add(obj);
+                    Relation revobj = new() { UserId = userid, TeamMemberId = user.Id };
+                    if (!_db.Relations.Contains(revobj))
+                    {
+                        _db.Notifications.Add(new Notification("<a href=\"/profile/" + user.Username + "\"> " + user.FirstName + " " + user.LastName + "</a> added you as a team member. Add him/her back!",
+                            userid,
+                            null,
+                            "addteammember/" + user.Id
+                        ));
+                    }
+                }
                 _db.SaveChanges();
                 return "Success";
             }
@@ -124,25 +137,6 @@ namespace daBoot.Controllers
         public async Task<IActionResult> SearchResult(string searchstr)
         {
             var searchTerms = searchstr.Split();
-            //IEnumerable<Account> objList = null;
-            /*if (searchTerms.Length == 2)
-            {
-                objList = _db.Users.Where(u => u.FirstName.Contains(searchTerms[0]) &&
-                                        u.LastName.Contains(searchTerms[1]));
-            }
-            else
-            {
-                objList = _db.Users.Where(u => u.FirstName.Contains(searchTerms[0]) ||
-                                        u.LastName.Contains(searchTerms[0]) ||
-                                        u.Username.Contains(searchTerms[0]));
-            }*/
-            // .Where(u => (u.FirstName + " " + u.LastName).Contains(searchstr) || ("@" + u.Username).Contains(searchstr))
-            //objList = _db.Users.Where(u => (u.FirstName.ToString() + " ".ToString() + u.LastName.ToString()).Contains(searchstr));
-            /*objList = _db.Users.FromSqlRaw("SELECT * FROM Users u WHERE " +
-                "u.FirstName + ' ' + u.LastName LIKE " + searchstr +
-                " OR u.UserName LIKE " + searchstr);
-            */
-            //var objList = new IEnumerable<SearchItemResult> ;
             IEnumerable<SearchItemResult> objList = null;
             if (searchTerms.Length == 2)
             {

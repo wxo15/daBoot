@@ -1,5 +1,5 @@
 ﻿@model IEnumerable<daBoot.Models.Notification>
-
+@using Microsoft.AspNetCore.Html
 @{
     ViewData["Title"] = "Your Notifications";
 }
@@ -75,7 +75,7 @@
 
         <table class="table table-bordered" style="width:100%">
             <tbody>
-                @foreach (var notification in Model)
+                @foreach (var notification in Model.OrderByDescending(u => u.NotificationTimeStamp))
                 {
 
                     @if (notification.IsRead)
@@ -83,7 +83,10 @@
                         <tr class="table-secondary">
                             <td width="80%" style="vertical-align:middle;">
                                 <span style="float:left;">
-                                    <strong><a href="@notification.GetAction">@notification.NotificationString</a></strong>
+                                    @{
+                                        HtmlString msg = new HtmlString(@notification.NotificationString);
+                                        @msg
+                                    }
                                 </span>
                                 <span style="float:right;">
                                     <em>@notification.NotificationTimeStamp.ToString("dd MMM yyyy hh:mm tt")</em>
@@ -93,6 +96,10 @@
                                 @if (notification.PostAction != null)
                                 {
                                     <button title="Perform action" class="btn btn-success" onclick="action('@notification.PostAction', @notification.Id)"><i class="icon-check-sign"></i></button>
+                                }
+                                @if (notification.GetAction != null)
+                                {
+                                    <button title="Go" class="btn btn-primary" onclick="window.location.href='@notification.GetAction'"><i class="icon-external-link"></i></button>
                                 }
                                 <button title="Mark as Unread" class="btn btn-secondary" onclick="readunread('unread',@notification.Id)"><i class="icon-eye-close"></i></button>
                             </td>
@@ -103,7 +110,10 @@
                         <tr>
                             <td width="80%" style="vertical-align:middle;">
                                 <span style="float:left;">
-                                    <strong><a href="@notification.GetAction">@notification.NotificationString</a></strong>
+                                    @{
+                                        HtmlString msg = new HtmlString(@notification.NotificationString);
+                                        @msg
+                                    }
                                 </span>
                                 <span style="float:right;">
                                     <em>@notification.NotificationTimeStamp.ToString("dd MMM yyyy hh:mm tt")</em>
@@ -114,7 +124,11 @@
                                 {
                                     <button title="Perform action" class="btn btn-success" onclick="action('@notification.PostAction', @notification.Id)"><i class="icon-check-sign"></i></button>
                                 }
-                                <button title="Mark as read" class="btn btn-secondary" onclick="readunread('read',@notification.Id)"><i class="icon-eye-open"></i></button>
+                                @if (notification.GetAction != null)
+                                {
+                                    <button title="Go" class="btn btn-primary" onclick="window.location.href='@notification.GetAction'"><i class="icon-external-link"></i></button>
+                                }
+                                <button title="Mark as Read" class="btn btn-secondary" onclick="readunread('read',@notification.Id)"><i class="icon-eye-open"></i></button>
                             </td>
                         </tr>
                     }

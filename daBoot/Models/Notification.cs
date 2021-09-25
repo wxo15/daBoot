@@ -22,12 +22,14 @@ namespace daBoot.Models
         public DateTime NotificationTimeStamp { get; set; }
         public virtual Account NotificationUser { get; set; }
 
-        public Notification(string notificationstr, int userid, DateTime notificationtimestamp)
+        public Notification(string notificationstr, int userid, string getaction = null, string postaction = null)
         {
             NotificationString = notificationstr;
             UserId = userid;
             IsRead = false;
-            NotificationTimeStamp = notificationtimestamp;
+            NotificationTimeStamp = DateTime.Now;
+            GetAction = getaction;
+            PostAction = postaction;
         }
 
         public Notification()
