@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="~/css/font-awesome/css/font-awesome.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
-<body>
+<body style="background-color: #e7e7e7">
     <div id="mySidebar" class="sidebar">
         <a href="javascript:void(0)" id="sidebarclose" class="closebtn" onclick="closeNav()"><i class="fa fa-arrow-left"></i></a>
         <div class="text-light" style="height:40vh; text-align:center">
@@ -39,8 +39,8 @@
         </div>
     </div>
 
-    <header id="header">
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3"  style="transition:0.5s">
+    <header id="header" style="background-color: #e7e7e7">
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border box-shadow"  style="transition:0.5s">
             <div class="container">
                 <button id="sidebaropen" class="openbtn mr-2" onclick="openNav()"><i class="fa fa-arrow-right"></i></button>
                 <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">daBoot</a>
@@ -72,15 +72,15 @@
             </div>
         </nav>
     </header>
-    <div id="main">
+    <section id="main">
         <div class="container">
             <main role="main" class="pb-3">
                 @RenderBody()
             </main>
         </div>
-    </div>
+    </section>
 
-    <footer id="footer" class="border-top footer text-muted">
+    <footer id="footer" class="border-top footer text-muted" style="transition:0.5s">
         <div class="container">
             &copy; 2021 - daBoot - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>

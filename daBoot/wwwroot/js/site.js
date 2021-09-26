@@ -24,7 +24,7 @@ function openNav() {
 function closeNav() {
     document.getElementById("mySidebar").style.width = "0";
     document.getElementById("header").style.marginLeft = "0";
-    document.getElementById("main").style.marginLeft = "0";
+    document.getElementById("main").style.marginLeft = "20px";
     document.getElementById("footer").style.marginLeft = "0";
     document.getElementById("footer").style.width = "100%";
 }

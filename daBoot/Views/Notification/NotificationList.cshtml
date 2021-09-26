@@ -64,81 +64,89 @@
 
 
 <div class="container p-3">
-    <div class="text-center">
-        <h1 class="display-4">Your Notifications</h1>
+    <div class="card">
+        <div class="text-center">
+            <h1>Your Notifications</h1>
+        </div>
+
+        @if (Model != null && Model.Count() > 0)
+        {
+            <div class="col-12 col-lg-6">
+                <button class="btn btn-primary m-4" onclick="readall()">Mark All as Read</button>
+            </div>
+            <table class="table table-bordered table-hover" style="width:100%">
+                <thead>
+                    <tr>
+                        <td width="80%">Notification</td>
+                        <td width="20%">Action</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var notification in Model.OrderByDescending(u => u.NotificationTimeStamp))
+                    {
+
+                        @if (notification.IsRead)
+                        {
+                            <tr class="table-secondary">
+                                <td>
+                                    <span style="float:left;">
+                                        @{
+                                            HtmlString msg = new HtmlString(@notification.NotificationString);
+                                            @msg
+                                        }
+                                    </span>
+                                    <span style="float:right;">
+                                        <em>@notification.NotificationTimeStamp.ToString("dd MMM yyyy hh:mm tt")</em>
+                                    </span>
+                                </td>
+                                <td>
+                                    @if (notification.PostAction != null)
+                                    {
+                                        <button title="Perform action" class="btn btn-success" onclick="action('@notification.PostAction', @notification.Id)"><i class="icon-check-sign"></i></button>
+                                    }
+                                    @if (notification.GetAction != null)
+                                    {
+                                        <button title="Go" class="btn btn-primary" onclick="window.location.href='@notification.GetAction'"><i class="icon-external-link"></i></button>
+                                    }
+                                    <button title="Mark as Unread" class="btn btn-secondary" onclick="readunread('unread',@notification.Id)"><i class="icon-eye-close"></i></button>
+                                </td>
+                            </tr>
+                        }
+                        else
+                        {
+                            <tr>
+                                <td>
+                                    <span style="float:left;">
+                                        @{
+                                            HtmlString msg = new HtmlString(@notification.NotificationString);
+                                            @msg
+                                        }
+                                    </span>
+                                    <span style="float:right;">
+                                        <em>@notification.NotificationTimeStamp.ToString("dd MMM yyyy hh:mm tt")</em>
+                                    </span>
+                                </td>
+                                <td>
+                                    @if (notification.PostAction != null)
+                                    {
+                                        <button title="Perform action" class="btn btn-success" onclick="action('@notification.PostAction', @notification.Id)"><i class="icon-check-sign"></i></button>
+                                    }
+                                    @if (notification.GetAction != null)
+                                    {
+                                        <button title="Go" class="btn btn-primary" onclick="window.location.href='@notification.GetAction'"><i class="icon-external-link"></i></button>
+                                    }
+                                    <button title="Mark as Read" class="btn btn-secondary" onclick="readunread('read',@notification.Id)"><i class="icon-eye-open"></i></button>
+                                </td>
+                            </tr>
+                        }
+
+                    }
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <p>You don't have any notification.</p>
+        }
     </div>
-
-    @if (Model != null && Model.Count() > 0)
-    {
-
-        <button class="btn btn-primary m-4" onclick="readall()">Mark All as Read</button>
-
-        <table class="table table-bordered" style="width:100%">
-            <tbody>
-                @foreach (var notification in Model.OrderByDescending(u => u.NotificationTimeStamp))
-                {
-
-                    @if (notification.IsRead)
-                    {
-                        <tr class="table-secondary">
-                            <td width="80%" style="vertical-align:middle;">
-                                <span style="float:left;">
-                                    @{
-                                        HtmlString msg = new HtmlString(@notification.NotificationString);
-                                        @msg
-                                    }
-                                </span>
-                                <span style="float:right;">
-                                    <em>@notification.NotificationTimeStamp.ToString("dd MMM yyyy hh:mm tt")</em>
-                                </span>
-                            </td>
-                            <td width="20%" style="vertical-align:middle;">
-                                @if (notification.PostAction != null)
-                                {
-                                    <button title="Perform action" class="btn btn-success" onclick="action('@notification.PostAction', @notification.Id)"><i class="icon-check-sign"></i></button>
-                                }
-                                @if (notification.GetAction != null)
-                                {
-                                    <button title="Go" class="btn btn-primary" onclick="window.location.href='@notification.GetAction'"><i class="icon-external-link"></i></button>
-                                }
-                                <button title="Mark as Unread" class="btn btn-secondary" onclick="readunread('unread',@notification.Id)"><i class="icon-eye-close"></i></button>
-                            </td>
-                        </tr>
-                    }
-                    else
-                    {
-                        <tr>
-                            <td width="80%" style="vertical-align:middle;">
-                                <span style="float:left;">
-                                    @{
-                                        HtmlString msg = new HtmlString(@notification.NotificationString);
-                                        @msg
-                                    }
-                                </span>
-                                <span style="float:right;">
-                                    <em>@notification.NotificationTimeStamp.ToString("dd MMM yyyy hh:mm tt")</em>
-                                </span>
-                            </td>
-                            <td width="20%" style="vertical-align:middle;">
-                                @if (notification.PostAction != null)
-                                {
-                                    <button title="Perform action" class="btn btn-success" onclick="action('@notification.PostAction', @notification.Id)"><i class="icon-check-sign"></i></button>
-                                }
-                                @if (notification.GetAction != null)
-                                {
-                                    <button title="Go" class="btn btn-primary" onclick="window.location.href='@notification.GetAction'"><i class="icon-external-link"></i></button>
-                                }
-                                <button title="Mark as Read" class="btn btn-secondary" onclick="readunread('read',@notification.Id)"><i class="icon-eye-open"></i></button>
-                            </td>
-                        </tr>
-                    }
-
-                }
-            </tbody>
-        </table>
-    }
-    else
-    {
-        <p>You don't have any notification.</p>
-    }
 </div>

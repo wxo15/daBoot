@@ -38,44 +38,56 @@
 </script>
 
 <div class="container p-3">
-    <div class="text-center">
-        <h1 class="display-4">Search Result</h1>
-    </div>
+    <div class="card">
+        <div class="text-center">
+            <h1>Search Result</h1>
+        </div>
 
-    @if (Model.Count() > 0)
-    {
-        <table class="table table-bordered table-striped" style="width:100%">
-            <tbody>
-                @foreach (var member in Model)
-                {
+        @if (Model.Count() > 0)
+        {
+            <table class="table table-bordered table-hover" style="width:100%">
+                <thead>
                     <tr>
-                        <td width="10%" style="vertical-align:middle;">
-                            <img class="center" src=@member.Account.ProfilePicURL alt="profile pic" style="object-fit: cover; width: 100%; overflow: hidden; border-radius: 15vh; background-color: white; display: block; margin-left: auto; margin-right: auto;">
-                        </td>
-                        <td width="80%" style="vertical-align:middle;">
-                            <h3><a href="/profile/@member.Account.Username">@member.Account.FirstName @member.Account.LastName</a></h3>
-                            <p class="text-muted">@@@member.Account.Username</p>
-                        </td>
-                        <td width="10%" style="vertical-align:middle;">
-                            @if (User.Identity.IsAuthenticated)
-                            {
-                                @if (member.IsMember)
-                                {
-                                    <button onclick="rmvteammember(@member.Account.Id)" class="btn btn-secondary">-</button>
-                                }
-                                else
-                                {
-                                    <button onclick="addteammember(@member.Account.Id)" class="btn btn-success">+</button>
-                                }
-                            }
-                        </td>
+                        <td width="80%">Profile</td>
+                        <td width="20%">Action</td>
                     </tr>
-                }
-            </tbody>
-        </table>
-    }
-    else
-    {
-        <p>No result found.</p>
-    }
+                </thead>
+                <tbody>
+                    @foreach (var member in Model)
+                    {
+                        <tr>
+                            <td style="text-align: left;">
+                                <div class="row display-flex">
+                                    <div class="col-2 pl-0 pr-0">
+                                        <img src=@member.Account.ProfilePicURL alt="profile pic" style="object-fit: cover; width: 6vh; overflow: hidden; border-radius: 3vh; background-color: white; display: block; margin-left: auto; margin-right: auto;">
+                                    </div>
+                                    <div class="col-10">
+                                        <h3><a href="/profile/@member.Account.Username">@member.Account.FirstName @member.Account.LastName</a></h3>
+                                        <p class="text-muted">@@@member.Account.Username</p>
+                                    </div>
+                                </div>
+                            </td>
+                            <td style="vertical-align:middle;">
+                                @if (User.Identity.IsAuthenticated)
+                                {
+                                    @if (member.IsMember)
+                                    {
+                                <button onclick="rmvteammember(@member.Account.Id)" class="btn btn-secondary"><i class="icon-minus"></i></button>
+                                    }
+                                    else
+                                    {
+                                        <button onclick="addteammember(@member.Account.Id)" class="btn btn-success"><i class="icon-plus"></i></button>
+                                    }
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <p>No result found.</p>
+        }
+    </div>
 </div>

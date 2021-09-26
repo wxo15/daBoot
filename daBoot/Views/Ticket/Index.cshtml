@@ -19,90 +19,138 @@
 <div class="container p-3">
     @if (Model != null)
     {
-        <a href="/project/@Model.ProjectId">Back to project</a>
-        <h1>Subject: @Model.Subject</h1>
-        <div style="display: flex;">
-            <div style="display: flex; flex-direction: column; flex: 1;">
-                <p style="display: flex; flex-wrap: wrap;">Priority: @Model.Priority.PriorityName</p>
-                <p style="display: flex; flex-wrap: wrap;">Submitter: @((Model.Submitter?.FirstName ?? "").ToString()) @((Model.Submitter?.LastName ?? "").ToString())</p>
-                @if (Model.Assigner == null)
-                {
-                    <p style="display: flex; flex-wrap: wrap;">Assigner: Not assigned</p>
-                }
-                else
-                {
-                    <p style="display: flex; flex-wrap: wrap;">Assigner: <strong><a href="/profile/@Model.Assigner.Username">@Model.Assigner.FirstName @Model.Assigner.LastName</a></strong></p>
-                }
-                @if (Model.Assignee == null)
-                {
-                    <p style="display: flex; flex-wrap: wrap;">Assignee: Not assigned</p>
-                }
-                else
-                {
-                    <p style="display: flex; flex-wrap: wrap;">Assignee: <strong><a href="/profile/@Model.Assignee.Username">@Model.Assignee.FirstName @Model.Assignee.LastName</a></strong></p>
-                }
-                <p style="display: flex; flex-wrap: wrap;">Status: @Model.Status.StatusName</p>
-                <button title="invite" class="btn btn-primary m-4" onclick="popuptoggle('assignpopup')">Assign to</button>
-                @if (ViewData["UserRole"].ToString() == "Dev" || ViewData["UserRole"].ToString() == "Lead")
-                {
-                    <div id="assignpopup" style="display: none;">
-                        <form action="/assign?ticketid=@Model.Id" method="post" id="assignform">
-                            <select class="form-select" id="assignpopupSelect" title="selection" form="assignform" name="userid">
-                                <option selected>Assign to</option>
-                                @if ((IEnumerable<Account>)ViewData["AssigneeCandidate"] != null)
-                                {
-                                    foreach (var teammember in (IEnumerable<Account>)ViewData["AssigneeCandidate"])
-                                    {
-                                        <option value=@teammember.Id>@teammember.FirstName @teammember.LastName (@@@teammember.Username)</option>
-                                    }
-                                }
-                            </select>
-                            @if (Model.Deadline == null)
-                            {
-                                <input type="date" class="form-control" id="deadline" name="deadline" required>
-                            }
-                            else
-                            {
-                                <input type="date" class="form-control" id="deadline" name="deadline" value="@Model.Deadline.ToString()" required>
-                            }
-                            <input type="submit" class="form-control" />
-                        </form>
-                    </div>
-                }
+    <div class="card">
+        <a class="mb-3" href="/project/@Model.ProjectId"><i class="icon-arrow-left"></i> Back to project</a>
+        <h1><i class="icon-ticket"></i>Subject: @Model.Subject</h1>
+        <div class="row">
+            <div class="col-12 col-lg-6">
+                <p><b>Priority:</b> @Model.Priority.PriorityName</p>
             </div>
-            <div style="display: flex; flex-direction: column; flex: 1;">
-                <p style="display: flex; flex-wrap: wrap;">Id: @Model.Id</p>
-                <p style="display: flex; flex-wrap: wrap;">Submitted On: @((Model.SubmittedDateTime?.Date.ToString("dd MMM yyyy") ?? "").ToString())</p>
-                <p style="display: flex; flex-wrap: wrap;">Assigned On: @((Model.AssignedDateTime?.Date.ToString("dd MMM yyyy") ?? "").ToString())</p>
-                <p style="display: flex; flex-wrap: wrap;">Deadline: @((Model.Deadline?.Date.ToString("dd MMM yyyy") ?? "").ToString())</p>
-                <p style="display: flex; flex-wrap: wrap;">Status Updated On: @Model.StatusUpdated.Date.ToString("dd MMM yyyy")</p>
-                @if (Model.Assignee?.Username == User.Claims.FirstOrDefault(c => c.Type == "username").Value)
-                {
-                    <button title="invite" class="btn btn-success m-4" onclick="popuptoggle('statuspopup')">Update status</button>
-                    <div id="statuspopup" style="display: none;">
-                        <form action="/statusupdate?ticketid=@Model.Id" method="post" id="statusform">
-                            <select class="form-select" id="statuspopupSelect" title="selection" form="statusform" name="statusid">
-                                <option selected>Change status to</option>
-                                @if ((IEnumerable<Status>)ViewData["StatusCandidate"] != null)
-                                {
-                                    foreach (var validstatus in (IEnumerable<Status>)ViewData["StatusCandidate"])
-                                    {
-                                        <option value=@validstatus.Id>@validstatus.StatusName</option>
-                                    }
-                                }
-                            </select>
-                            <input type="submit" class="form-control" />
-                        </form>
-                    </div>
-                }
+            <div class="col-12 col-lg-6">
+                <p><b>Id:</b> @Model.Id</p>
             </div>
         </div>
-        <h3 class="mt-3">Description</h3>
+        <div class="row">
+            <div class="col-12 col-lg-6">
+                <span style="float:left;"><b>Submitter:</b> </span>
+                <span class="chip">
+                    <img src=@Model.Submitter?.ProfilePicURL alt="i">
+                    <a href="/profile/@Model.Submitter?.Username">@((Model.Submitter?.FirstName ?? "").ToString()) @((Model.Submitter?.LastName ?? "").ToString())</a>
+                </span>
+            </div>
+            <div class="col-12 col-lg-6">
+                <p><b>Submitted On:</b> @((Model.SubmittedDateTime?.Date.ToString("dd MMM yyyy") ?? "").ToString())</p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12 col-lg-6">
+                <span style="float:left;"><b>Assigner:</b> </span>
+                @if (Model.Assigner == null)
+                {
+                    <span>Not Assigned</span>
+                }
+                else
+                {
+                    <span class="chip">
+                        <img src=@Model.Assigner?.ProfilePicURL alt="i">
+                        <a href="/profile/@Model.Assigner?.Username">@((Model.Assigner?.FirstName ?? "").ToString()) @((Model.Assigner?.LastName ?? "").ToString())</a>
+                    </span>
+                }
+            </div>
+            <div class="col-12 col-lg-6">
+                <p><b>Assigned On:</b> @((Model.AssignedDateTime?.Date.ToString("dd MMM yyyy") ?? "").ToString())</p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12 col-lg-6">
+                <span style="float:left;"><b>Assignee:</b> </span>
+                @if (Model.Assignee == null)
+                {
+                    <span>Not Assigned</span>
+                }
+                else
+                {
+                    <span class="chip">
+                        <img src=@Model.Assignee?.ProfilePicURL alt="i">
+                        <a href="/profile/@Model.Assignee?.Username">@((Model.Assignee?.FirstName ?? "").ToString()) @((Model.Assignee?.LastName ?? "").ToString())</a>
+                    </span>
+                }
+            </div>
+            <div class="col-12 col-lg-6">
+                <p><b>Deadline:</b> @((Model.Deadline?.Date.ToString("dd MMM yyyy") ?? "").ToString())</p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12 col-lg-6">
+                <p><b>Status:</b> @Model.Status.StatusName</p>
+            </div>
+            <div class="col-12 col-lg-6">
+                <p><b>Status Updated On:</b> @Model.StatusUpdated.Date.ToString("dd MMM yyyy")</p>
+            </div>
+        </div>
+        <h5 class="mt-3">Description</h5>
         <p width="100%">@Model.Description</p>
 
-        <h3 class="mt-3">Comments</h3>
-        <table class="table table-bordered table-striped" style="width:100%">
-            <tbody>
+        <div class="row mt-3 mb-3 mr-3" style="margin-left: auto; display: flex; justify-content: space-between; ">
+            @if (ViewData["UserRole"].ToString() == "Dev" || ViewData["UserRole"].ToString() == "Lead")
+            {
+                <button title="invite" class="mr-2 btn btn-primary" onclick="popuptoggle('assignpopup')">Assign to</button>
+            }
+            @if (Model.Assignee?.Username == User.Claims.FirstOrDefault(c => c.Type == "username").Value)
+            {
+                <button title="invite" class="btn btn-primary" onclick="popuptoggle('statuspopup')">Update status</button>
+            }
+        </div>
+
+
+        <div class="row">
+            <div class="col-12 col-lg-4 offset-lg-4">
+                <div id="assignpopup" style="display: none;" class="mb-3">
+                    <form action="/assign?ticketid=@Model.Id" method="post" id="assignform">
+                        <select class="form-select" id="assignpopupSelect" title="selection" form="assignform" name="userid">
+                            <option selected>Assign to</option>
+                            @if ((IEnumerable<Account>)ViewData["AssigneeCandidate"] != null)
+                            {
+                                foreach (var teammember in (IEnumerable<Account>)ViewData["AssigneeCandidate"])
+                                {
+                                    <option value=@teammember.Id>@teammember.FirstName @teammember.LastName (@@@teammember.Username)</option>
+                                }
+                            }
+                        </select>
+                        @if (Model.Deadline == null)
+                        {
+                            <input type="date" class="form-control" id="deadline" name="deadline" required>
+                        }
+                        else
+                        {
+                            <input type="date" class="form-control" id="deadline" name="deadline" value="@Model.Deadline.ToString()" required>
+                        }
+                        <input type="submit" class="btn btn-success form-control" />
+                    </form>
+                </div>
+                <div id="statuspopup" style="display: none;" class="mb-3">
+                    <form action="/statusupdate?ticketid=@Model.Id" method="post" id="statusform">
+                        <select class="form-select" id="statuspopupSelect" title="selection" form="statusform" name="statusid">
+                            <option selected>Change status to</option>
+                            @if ((IEnumerable<Status>)ViewData["StatusCandidate"] != null)
+                            {
+                                foreach (var validstatus in (IEnumerable<Status>)ViewData["StatusCandidate"])
+                                {
+                                    <option value=@validstatus.Id>@validstatus.StatusName</option>
+                                }
+                            }
+                        </select>
+                        <input type="submit" class="btn btn-success form-control" />
+                    </form>
+                </div>
+            </div>
+        </div>
+
+
+
+        <h5 class="mt-3">Comments</h5>
+        <table class="table table-bordered table-hover" style="width:100%">
+            <thead>
                 <tr>
                     <td width="100%" style="vertical-align:middle;">
                         <form action="/newcomment/?ticketid=@Model.Id" method="post">
@@ -115,6 +163,8 @@
                         </form>
                     </td>
                 </tr>
+            </thead>
+            <tbody>
                 @foreach (var comment in Model.Comments.OrderBy(u => u.CommentTimeStamp))
                 {
                     <tr>
@@ -125,13 +175,13 @@
                             <span style="float:right;">
                                 <em>@comment.CommentTimeStamp.ToString("dd MMM yyyy hh:mm tt")</em>
                             </span><br />
-                            <p>@comment.CommentString</p>
+                            <p style="float:left;">@comment.CommentString</p>
                         </td>
                     </tr>
                 }
             </tbody>
         </table>
-
+    </div>
     }
     else
     {

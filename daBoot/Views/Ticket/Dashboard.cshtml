@@ -14,25 +14,31 @@
 }
 
 
-<div style="display: flex !important" class="dashboard-container">
-    <div class="chart-item">
-        <h3>My Assigned Tickets</h3>
-        <div style="height: 100%">
-            <canvas id="stackedAssignedTickets" style="border: 2px solid #000000;"> </canvas>
+<div class="row display-flex">
+    <div class="col-12 col-lg-6">
+        <div class="card chart-item">
+            <h3>My Assigned Tickets</h3>
+            <div style="height: 100%">
+                <canvas id="stackedAssignedTickets"> </canvas>
+            </div>
         </div>
     </div>
-    <div class="chart-item">
-        <h3>My Roles</h3>
-        <div style="height: 100%">
-            <canvas id="rolepiechart" style="border: 2px solid #000000;"> </canvas>
+    <div class="col-12 col-lg-6">
+        <div class="card chart-item">
+            <h3>My Roles</h3>
+            <div style="height: 100%">
+                <canvas id="rolepiechart"> </canvas>
+            </div>
         </div>
     </div>
 </div>
-<div style="display: flex !important" class="dashboard-container">
-    <div class="chart-item">
-        <h3>My Submitted Tickets</h3>
-        <div style="height: 100%">
-            <canvas id="submittedticketpiechart" style="border: 2px solid #000000;"> </canvas>
+<div class="row display-flex">
+    <div class="col-12 col-lg-6 offset-lg-3">
+        <div class="card chart-item">
+            <h3>My Submitted Tickets</h3>
+            <div style="height: 100%">
+                <canvas id="submittedticketpiechart"> </canvas>
+            </div>
         </div>
     </div>
 </div>

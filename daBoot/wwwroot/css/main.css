@@ -65,7 +65,15 @@
 /* Style page content - use this if you want to push the page content to the right when you open the side navigation */
 #main, #header, #footer {
     transition: margin-left .5s; /* If you want a transition effect */
-    padding: 20px;
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
+#main {
+    margin: 20px;
+}
+#header, #footer {
+    background-color: white;
 }
 
 /* On smaller screens, where height is less than 450px, change the style of the sidenav (less padding and a smaller font size) */
@@ -137,10 +145,63 @@ p {
 }
 
 .chart-item {
-    /*min-width: 400px;*/
-    display: flex !important;
-    height: 50vh;
-    flex-direction: column;
-    padding: 20px;
-    flex: 50%
+    min-height: 50vh;
+    margin: 10px;
 }
+
+.card {
+    background-color: white;
+    padding: 10px;
+    border-radius: 20px;
+}
+
+.btn {
+    transition-duration: 0.5s
+}
+
+@media screen and (max-width: 992px) {
+    .chart-item {
+        margin-left: 0;
+        margin-right: 0;
+    }
+    .container {
+        padding: 0;
+    }
+    #main {
+        padding: 0;
+    }
+}
+
+.chip {
+    display: inline-block;
+    padding: 0 10px;
+    line-height: 20px;
+    border-radius: 10px;
+    background-color: #f1f1f1;
+    width: fit-content;
+    height: fit-content;
+}
+
+.chip img {
+    float: left;
+    margin: 0 5px 0 -10px;
+    height: 20px;
+    width: 20px;
+    border-radius: 50%;
+}
+
+.chip-success {
+    color: #28a745;
+    cursor: pointer;
+}
+
+.chip-danger {
+    color: #dc3545;
+    cursor: pointer;
+}
+/*
+table {
+    word-wrap: break-word;
+    word-break: break-all;
+    table-layout: fixed;
+}*/

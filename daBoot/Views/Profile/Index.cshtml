@@ -36,13 +36,14 @@
     }
 </script>
 
-<div class="container p-3">
-    @if (Model != null)
+<div class="container p-3 card">
+    @if (Model != null && Model.Id != -1) // Dont display -1 profile
     {
-        <div class="m-3" style="text-align:center;">
-            <img class="center" src=@Model.ProfilePicURL alt="profile pic" style="object-fit: cover; width: 30vh; height: 30vh; overflow: hidden; border-radius: 15vh; background-color: white; display: block; margin-left: auto; margin-right: auto;">
+    <div class="row display-flex">
+        <div class="col-12 col-lg-6" style="text-align: center; margin: auto;">
+            <img class="center" src=@Model.ProfilePicURL alt="profile pic" style="object-fit: cover; width: 30vh; height: 30vh; overflow: hidden; border-radius: 15vh; background-color: white; display: block; margin: auto; vertical-align: middle;">
         </div>
-        <div class="col-12 col-lg-6 offset-0 offset-lg-3">
+        <div class="col-12 col-lg-6">
             <form action="/profile/update/" method="post" style="text-align:center; width:100%; margin:auto">
                 <small class="form-text">ID</small>
                 <div class="input-group mb-3">
@@ -85,7 +86,7 @@
                     </div>
                     <small class="form-text">Last Name</small>
                     <div class="input-group mb-3">
-                        <input type="text" id="lastname" name="lastname" class="form-control" value=string(@Model.LastName) readonly="readonly" />
+                        <input type="text" id="lastname" name="lastname" class="form-control" value=@Model.LastName readonly="readonly" />
                     </div>
                     <small class="form-text">Email Address</small>
                     <div class="input-group mb-3">
@@ -115,6 +116,7 @@
             }
 
         </div>
+    </div>
     }
     else
     {

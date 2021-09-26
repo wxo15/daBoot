@@ -35,12 +35,6 @@ html {
     }
 }
 
-@media screen and (max-width: 1000px) {
-    .dashboard-container {
-        flex-direction: column;
-        height: auto;
-    }
-}
 /*
 @media (max-width: 768px) {
     .chart-item {
@@ -81,4 +75,33 @@ body {
     width: 100%;
     white-space: nowrap;
     line-height: 60px; /* Vertically center the text there */
+}
+
+.row {
+    margin-left: 0;
+    margin-right: 0;
+}
+
+.row.display-flex {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.row.display-flex > [class*='col-'] {
+    display: flex;
+    flex-direction: column;
+}
+
+thead {
+    background-color: #000000;
+    color: white;
+    font-weight: bold;
+}
+
+td {
+    text-align: center;
+}
+
+select {
+    width: 100%;
 }

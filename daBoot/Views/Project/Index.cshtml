@@ -75,146 +75,134 @@
 <div class="container p-3">
     @if (Model != null)
     {
-        <div style="display: flex;">
-            <div style="display: flex; flex-direction: column; flex: 1;">
-                <h1 style="display: flex; flex-wrap: wrap;">@Model.Name</h1>
-                <p style="display: flex; flex-wrap: wrap;">ID: @Model.Id</p>
-                <p style="display: flex; flex-wrap: wrap;">Your role: @ViewData["UserRole"]</p>
-                <button title="invite" class="btn btn-primary m-4" onclick="invitepopuptoggle()">Invite your team member</button>
-                <div id="invitepopup" style="display: none;">
-                    <select class="form-select" id="popupSelect" title="selection" onchange="invite(@Model.Id)">
-                        <option selected>Select your team member</option>
-                        @foreach (var teammember in (IEnumerable<Account>)ViewData["YourTeamMembers"])
-                        {
-                            <option value=@teammember.Id>@teammember.FirstName @teammember.LastName (@@@teammember.Username)</option>
-                        }
-                    </select>
+        <div class="card">
+            <div class="row mb-3">
+                <div class="col-12 col-lg-6" style="height: auto;">
+                    <h1 style="display: flex; flex-wrap: wrap;">@Model.Name</h1>
+                    <p style="display: flex; flex-wrap: wrap;">ID: @Model.Id</p>
+                    <p style="display: flex; flex-wrap: wrap;">Your role: @ViewData["UserRole"]</p>
+                    <button title="invite" class="btn btn-primary m-4" onclick="invitepopuptoggle()">Invite your team member</button>
+                    <div id="invitepopup" style="display: none;">
+                        <select class="form-select" id="popupSelect" title="selection" onchange="invite(@Model.Id)">
+                            <option selected>Select your team member</option>
+                            @foreach (var teammember in (IEnumerable<Account>)ViewData["YourTeamMembers"])
+                            {
+                                <option value=@teammember.Id>@teammember.FirstName @teammember.LastName (@@@teammember.Username)</option>
+                            }
+                        </select>
+                    </div>
                 </div>
-            </div>
-            <div style="display: flex; flex-direction: column; flex: 1;">
-                <h3>Lead:</h3>
-                <table class="table table-bordered table-striped" style="width:100%">
-                    <tbody>
+                <div class="col-12 col-lg-6 card" style="overflow-y: auto; max-height: 30vh;">
+                    <div>
+                        <h5>Lead:</h5>
                         @foreach (var member in @Model.TeamMembers.Where(m => m.Role.RoleName == "Lead"))
                         {
-                            <tr>
-                                <td width="80%" style="vertical-align:middle;">
-                                    <strong><a href="/profile/@member.User.Username">@member.User.FirstName @member.User.LastName</a></strong>
-                                    <p class="text-muted">@@@member.User.Username</p>
-                                </td>
-                                <td width="20%" style="vertical-align:middle;"> </td>
-                            </tr>
+                            <div class="chip">
+                                <img src=@member.User.ProfilePicURL alt="i">
+                                <a href="/profile/@member.User.Username">@member.User.FirstName @member.User.LastName</a>
+                                <i class="icon-flag"></i>
+                            </div>
                         }
-                    <tbody>
-                </table>
-                <h3 class="mt-3">Dev:</h3>
-                <table class="table table-bordered table-striped" style="width:100%">
-                    <tbody>
+                    </div>
+                    <div>
+                        <h5 class="mt-3">Dev:</h5>
                         @foreach (var member in @Model.TeamMembers.Where(m => m.Role.RoleName == "Dev"))
                         {
-                            <tr>
-                                <td width="80%" style="vertical-align:middle;">
-                                    <strong><a href="/profile/@member.User.Username">@member.User.FirstName @member.User.LastName</a></strong>
-                                    <p class="text-muted">@@@member.User.Username</p>
-                                </td>
+                            <div class="chip">
+                                <img src=@member.User.ProfilePicURL alt="i">
+                                <a href="/profile/@member.User.Username">@member.User.FirstName @member.User.LastName</a>
                                 @if (ViewData["UserRole"].ToString() == "Lead")
                                 {
-                                    <td width="20%" style="vertical-align:middle;">
-                                        <button title="promote" class="btn btn-success" onclick="promote(@member.UserId, 'Dev', @Model.Id)"><i class="icon-caret-up"></i></button>
-                                        <button title="demote" class="btn btn-danger" onclick="demote(@member.UserId, 'Dev', @Model.Id)"><i class="icon-caret-down"></i></button>
-                                    </td>
+                                    <i class="chip-success icon-caret-up" onclick="promote(@member.UserId, 'Dev', @Model.Id)"></i>
+                                    <i class="chip-danger icon-caret-down" onclick="demote(@member.UserId, 'Dev', @Model.Id)"></i>
                                 }
-                            </tr>
+                            </div>
                         }
-                    <tbody>
-                </table>
-                <h3 class="mt-3">Tester:</h3>
-                <table class="table table-bordered table-striped" style="width:100%">
-                    <tbody>
+                    </div>
+                    <div>
+                        <h5 class="mt-3">Tester:</h5>
                         @foreach (var member in @Model.TeamMembers.Where(m => m.Role.RoleName == "Tester"))
                         {
-                            <tr>
-                                <td width="80%" style="vertical-align:middle;">
-                                    <strong><a href="/profile/@member.User.Username">@member.User.FirstName @member.User.LastName</a></strong>
-                                    <p class="text-muted">@@@member.User.Username</p>
-                                </td>
+                            <div class="chip">
+                                <img src=@member.User.ProfilePicURL alt="avatar">
+                                <a href="/profile/@member.User.Username">@member.User.FirstName @member.User.LastName</a>
                                 @if (ViewData["UserRole"].ToString() == "Lead" || ViewData["UserRole"].ToString() == "Dev")
                                 {
-                                    <td width="20%" style="vertical-align:middle;">
-                                        <button title="promote" class="btn btn-success" onclick="promote(@member.UserId, 'Tester', @Model.Id)"><i class="icon-caret-up"></i></button>
-                                        <button title="demote" class="btn btn-danger" onclick="demote(@member.UserId, 'Tester', @Model.Id)"><i class="icon-caret-down"></i></button>
-                                    </td>
+                                    <i class="chip-success icon-caret-up" onclick="promote(@member.UserId, 'Tester', @Model.Id)"></i>
+                                    <i class="chip-danger icon-caret-down" onclick="demote(@member.UserId, 'Tester', @Model.Id)"></i>
                                 }
-                            </tr>
+                            </div>
                         }
-                    <tbody>
-                </table>
+                    </div>
+                </div>
             </div>
-        </div>
-        @if (Model.Tickets.Count() > 0)
-        {
-            <table class="table table-bordered table-striped" style="width:100%">
-                <tbody>
-                    <tr>
-                        <th width="50%" style="vertical-align:middle;">Subject</th>
-                        <th width="10%" style="vertical-align: middle;">Priority</th>
-                        <th width="10%" style="vertical-align: middle;">Status</th>
-                        <th width="15%" style="vertical-align:middle;">Assigned To</th>
-                        <th width="15%" style="vertical-align:middle;">Deadline</th>
-                    </tr>
-                    @foreach (var ticket in Model.Tickets)
-                    {
-                <tr>
-                    <td width="45%" style="vertical-align:middle;">
-                        <p><a href="/ticket/@ticket.Id">@ticket.Subject</a></p>
-                    </td>
-                    @if (ticket.Priority.PriorityName == "High")
-                    {
-                        <td width="10%" style="vertical-align: middle; background-color: rgba(255, 0, 0, 1);"></td>
-                    }
-                    else if (ticket.Priority.PriorityName == "Medium")
-                    {
-                        <td width="10%" style="vertical-align: middle; background-color: rgba(255, 212, 42, 1);"></td>
-                    }
-                    else
-                    {
-                        <td width="10%" style="vertical-align: middle; background-color: rgba(0, 212, 85, 1);"></td>
-                    }
+            @if (Model.Tickets.Count() > 0)
+            {
+                <div style="overflow-x: auto; ">
+                    <table class="table table-bordered table-striped" style="width:100%">
+                        <tbody>
+                            <tr>
+                                <th width="50%" style="vertical-align:middle;">Subject</th>
+                                <th width="10%" style="vertical-align: middle;">Priority</th>
+                                <th width="10%" style="vertical-align: middle;">Status</th>
+                                <th width="15%" style="vertical-align:middle;">Assigned To</th>
+                                <th width="15%" style="vertical-align:middle;">Deadline</th>
+                            </tr>
+                            @foreach (var ticket in Model.Tickets)
+                            {
+                                <tr>
+                                    <td style="text-align: left;">
+                                        <p><a href="/ticket/@ticket.Id">@ticket.Subject</a></p>
+                                    </td>
+                                    @if (ticket.Priority.PriorityName == "High")
+                                    {
+                                        <td style="background-color: rgba(255, 0, 0, 1);"></td>
+                                    }
+                                    else if (ticket.Priority.PriorityName == "Medium")
+                                    {
+                                        <td style="background-color: rgba(255, 212, 42, 1);"></td>
+                                    }
+                                    else
+                                    {
+                                        <td style="background-color: rgba(0, 212, 85, 1);"></td>
+                                    }
 
-                    @if (ticket.Status.StatusName == "Closed")
-                    {
-                        <td width="10%" style="vertical-align: middle; background-color: DarkGrey;"></td>
-                    }
-                    else if (ticket.Status.StatusName == "Late")
-                    {
-                        <td width="10%" style="vertical-align: middle; background-color: rgba(255, 0, 0, 1);"></td>
-                    }
-                    else if (ticket.Status.StatusName == "Open")
-                    {
-                        <td width="10%" style="vertical-align: middle; background-color: rgba(0, 212, 85, 1);"></td>
-                    }
-                    else if (ticket.Status.StatusName == "Rejected")
-                    {
-                        <td width="10%" style="vertical-align: middle; background-color: rgba(255, 0, 0, 1);"></td>
-                    }
-                    else
-                    {
-                        <td width="10%" style="vertical-align: middle; background-color: DeepSkyBlue;"></td>
-                    }
-                    <td width="15%" style="vertical-align:middle;">
-                        <p><a href="/profile/@(ticket.Assignee?.Username ?? "")">@((ticket.Assignee?.FirstName ?? "").ToString()) @((ticket.Assignee?.LastName ?? "").ToString())</a></p>
-                    </td>
-                    <td width="15%" style="vertical-align:middle;">
-                        <p>@((ticket.Deadline?.Date.ToString("dd MMM yyyy") ?? "").ToString())</p>
-                    </td>
-                </tr>
-                    }
-                </tbody>
-            </table>
-        }
-        <form action="/createticket/@Model.Id">
-            <button class="btn btn-primary">Make a new ticket</button>
-        </form>
+                                    @if (ticket.Status.StatusName == "Closed")
+                                    {
+                                        <td style="background-color: DarkGrey;"></td>
+                                    }
+                                    else if (ticket.Status.StatusName == "Late")
+                                    {
+                                        <td style="background-color: rgba(255, 0, 0, 1);"></td>
+                                    }
+                                    else if (ticket.Status.StatusName == "Open")
+                                    {
+                                        <td style="background-color: rgba(0, 212, 85, 1);"></td>
+                                    }
+                                    else if (ticket.Status.StatusName == "Rejected")
+                                    {
+                                        <td style="background-color: rgba(255, 0, 0, 1);"></td>
+                                    }
+                                    else
+                                    {
+                                        <td style="background-color: DeepSkyBlue;"></td>
+                                    }
+                                    <td>
+                                        <p><a href="/profile/@(ticket.Assignee?.Username ?? "")">@((ticket.Assignee?.FirstName ?? "").ToString()) @((ticket.Assignee?.LastName ?? "").ToString())</a></p>
+                                    </td>
+                                    <td>
+                                        <p>@((ticket.Deadline?.Date.ToString("dd MMM yyyy") ?? "").ToString())</p>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            <form action="/createticket/@Model.Id">
+                <button class="btn btn-primary">Make a new ticket</button>
+            </form>
+        </div>
     }
     else
     {
