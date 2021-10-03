@@ -21,11 +21,52 @@ using System.Text.Json;
 using daBoot.Models;
 using Newtonsoft.Json;
 using System.Text;
+using System.IO;
+using Renci.SshNet;
+using MySql.Data.MySqlClient;
 
 namespace daBoot
 {
     public class Startup
     {
+        public static (SshClient SshClient, uint Port) ConnectSsh(string sshHostName, string sshUserName, string sshPassword = null,
+            string sshKeyFile = null, string sshPassPhrase = null, int sshPort = 22, string databaseServer = "localhost", int databasePort = 3306)
+        {
+            // check arguments
+            if (string.IsNullOrEmpty(sshHostName))
+                throw new ArgumentException($"{nameof(sshHostName)} must be specified.", nameof(sshHostName));
+            if (string.IsNullOrEmpty(sshHostName))
+                throw new ArgumentException($"{nameof(sshUserName)} must be specified.", nameof(sshUserName));
+            if (string.IsNullOrEmpty(sshPassword) && string.IsNullOrEmpty(sshKeyFile))
+                throw new ArgumentException($"One of {nameof(sshPassword)} and {nameof(sshKeyFile)} must be specified.");
+            if (string.IsNullOrEmpty(databaseServer))
+                throw new ArgumentException($"{nameof(databaseServer)} must be specified.", nameof(databaseServer));
+
+            // define the authentication methods to use (in order)
+            var authenticationMethods = new List<AuthenticationMethod>();
+            if (!string.IsNullOrEmpty(sshKeyFile))
+            {
+                authenticationMethods.Add(new PrivateKeyAuthenticationMethod(sshUserName,
+                    new PrivateKeyFile(sshKeyFile, string.IsNullOrEmpty(sshPassPhrase) ? null : sshPassPhrase)));
+            }
+            if (!string.IsNullOrEmpty(sshPassword))
+            {
+                authenticationMethods.Add(new PasswordAuthenticationMethod(sshUserName, sshPassword));
+            }
+
+            // connect to the SSH server
+            var sshClient = new SshClient(new Renci.SshNet.ConnectionInfo(sshHostName, sshPort, sshUserName, authenticationMethods.ToArray()));
+            sshClient.Connect();
+
+            // forward a local port to the database server and port, using the SSH server
+            var forwardedPort = new ForwardedPortLocal("127.0.0.1", databaseServer, (uint)databasePort);
+            sshClient.AddForwardedPort(forwardedPort);
+            forwardedPort.Start();
+
+            return (sshClient, forwardedPort.BoundPort);
+        }
+
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -39,6 +80,43 @@ namespace daBoot
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseMySQL(Configuration.GetConnectionString("DefaultConnection"))
             );
+            
+            /*
+            services.AddDbContext<ApplicationDbContext>(options =>
+            {
+
+                var myConnectionSettings = Configuration.GetSection("ConnectionSettings").Get<ConnectionSettings>();
+                var sshSettings = myConnectionSettings.SSH;
+                var databaseSettings = myConnectionSettings.Database;
+                string keyFilePath = Path.Combine(Directory.GetCurrentDirectory(), "test4");
+                var authMethods = new List<AuthenticationMethod>
+                {
+                    new PrivateKeyAuthenticationMethod(sshSettings.UserName, new PrivateKeyFile(keyFilePath))
+                };
+                using (var sshClient = new SshClient(new Renci.SshNet.ConnectionInfo(sshSettings.Server,
+                    sshSettings.Port, sshSettings.UserName, authMethods.ToArray())))
+                {
+                    sshClient.Connect();
+                    var forwardedPort = new ForwardedPortLocal(databaseSettings.BoundHost, databaseSettings.Host,
+                        databaseSettings.Port);
+                    sshClient.AddForwardedPort(forwardedPort);
+                    forwardedPort.Start();
+
+
+                    MySqlConnectionStringBuilder csb;
+                    csb = new MySqlConnectionStringBuilder
+                    {
+                        Server = databaseSettings.BoundHost,
+                        Port = forwardedPort.BoundPort,
+                        UserID = databaseSettings.UserName,
+                        Password = databaseSettings.Password,
+                        Database = databaseSettings.DatabaseName
+                    };
+                    options.UseMySQL(csb.ConnectionString);
+                }
+
+            }); 
+            */
 
             services.AddControllersWithViews();
             services.AddAuthentication(options =>

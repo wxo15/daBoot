@@ -1,0 +1,41 @@
+﻿@{
+    ViewData["Title"] = "How to - Tickets";
+}
+
+<div class="container p-3">
+    <div class="card">
+        <h1 class="mb-3">@ViewData["Title"]</h1>
+
+        <p class="mb-3">All users can submit tickets by visiting <b>.../createticket/{projectid}</b>. For project members, they can be submitted on the project's page. </p>
+        <p class="mb-3">Once a ticket is submitted, it can then be assigned to a dev or lead, with a deadline set by the assigner. After being assigned the ticket, the assignee can change the status of the ticket, or assign it to someone else.</p>
+        <p class="mb-3">An overview of the tickets under a project can be accessed on the project page, and an overview of your projects, tickets assigned to you and their progress can be accessed on the <b>Dashboard</b> page, accessible from your side bar.</p>
+        <p class="mb-3">There are 5 different status, colour-coded as below:</p>
+
+        <div style="overflow-x: auto; ">
+            <table class="mt-3 mb-3 table table-hover table-bordered table-striped" style="white-space: nowrap; max-width: 10vw; margin: auto">
+                <thead class="thead-dark">
+                    <tr>
+                        <th scope="col" style="vertical-align: middle; text-align: center; ">Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="background-color: DarkGrey;">Closed</td>
+                    </tr>
+                    <tr>
+                        <td style="background-color: rgba(255, 0, 0, 1);">Late</td>
+                    </tr>
+                    <tr>
+                        <td style="background-color: rgba(0, 212, 85, 1);">Open</td>
+                    </tr>
+                    <tr>
+                        <td style="background-color: rgba(168, 125, 125, 1);">Rejected</td>
+                    </tr>
+                    <tr>
+                        <td style="background-color: DeepSkyBlue;">Submitted</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

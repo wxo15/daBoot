@@ -1,0 +1,78 @@
+﻿@{
+    ViewData["Title"] = "How to - Project and Roles";
+}
+
+<div class="container p-3">
+    <div class="card">
+        <h1 class="mb-3">@ViewData["Title"]</h1>
+
+        <p class="mb-3">There are three different roles a user can have for each project: <b>Lead</b>, <b>Dev</b> and <b>Tester</b>. While there can be zero or multiple devs and testers, there can only be one and only one lead.</p>
+        <p class="mb-3">You can create a new project on the <b>Projects and Roles</b> page, accessible from your side bar. Creating a project will by default make you the lead for that project.</p>
+
+        
+        <div style="overflow-x: auto; ">
+            <table class="mt-3 mb-3 table table-hover table-bordered table-striped" style="width:100%">
+                <thead class="thead-dark">
+                    <tr>
+                        <th scope="col"> </th>
+                        <th scope="col" style="vertical-align: middle; text-align: center;">No role</th>
+                        <th scope="col" style="vertical-align: middle; text-align: center; ">Tester</th>
+                        <th scope="col" style="vertical-align: middle; text-align: center; ">Dev</th>
+                        <th scope="col" style="vertical-align: middle; text-align: center; ">Lead</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <th scope="row">Submit tickets</th>
+                        <td style="vertical-align:middle;"><i class="text-success icon-check"></i></td>
+                        <td style="vertical-align:middle;"><i class="text-success icon-check"></i></td>
+                        <td style="vertical-align:middle;"><i class="text-success icon-check"></i></td>
+                        <td style="vertical-align:middle;"><i class="text-success icon-check"></i></td>
+                    </tr>
+                    <tr>
+                        <th scope="row">View project and its tickets</th>
+                        <td style="vertical-align:middle;"><i class="text-danger icon-minus"></i></td>
+                        <td style="vertical-align:middle;"><i class="text-success icon-check"></i></td>
+                        <td style="vertical-align:middle;"><i class="text-success icon-check"></i></td>
+                        <td style="vertical-align:middle;"><i class="text-success icon-check"></i></td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Assign and be assigned tickets</th>
+                        <td style="vertical-align:middle;"><i class="text-danger icon-minus"></i></td>
+                        <td style="vertical-align:middle;"><i class="text-danger icon-minus"></i></td>
+                        <td style="vertical-align:middle;"><i class="text-success icon-check"></i></td>
+                        <td style="vertical-align:middle;"><i class="text-success icon-check"></i></td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Promote testers to dev/Remove testers from the project*</th>
+                        <td style="vertical-align:middle;"><i class="text-danger icon-minus"></i></td>
+                        <td style="vertical-align:middle;"><i class="text-danger icon-minus"></i></td>
+                        <td style="vertical-align:middle;"><i class="text-success icon-check"></i></td>
+                        <td style="vertical-align:middle;"><i class="text-success icon-check"></i></td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Promote dev to lead**/Demote devs to testers</th>
+                        <td style="vertical-align:middle;"><i class="text-danger icon-minus"></i></td>
+                        <td style="vertical-align:middle;"><i class="text-danger icon-minus"></i></td>
+                        <td style="vertical-align:middle;"><i class="text-danger icon-minus"></i></td>
+                        <td style="vertical-align:middle;"><i class="text-success icon-check"></i></td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Notified of new tickets, changes, and deadlines</th>
+                        <td style="vertical-align:middle;"><i class="text-danger icon-minus"></i></td>
+                        <td style="vertical-align:middle;"><i class="text-danger icon-minus"></i></td>
+                        <td style="vertical-align:middle;"><i class="text-danger icon-minus"></i></td>
+                        <td style="vertical-align:middle;"><i class="text-success icon-check"></i></td>
+                    </tr>
+                    <tr>
+                        <td colspan="5" scope="col" style="text-align: left;">
+                            <p>* Demoting a tester will remove him/her from the project.</p>
+                            <p>** Promoting a dev to a lead role will demote yourself from a lead role to a dev role.</p>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+    </div>
+</div>

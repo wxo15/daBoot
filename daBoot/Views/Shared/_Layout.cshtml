@@ -40,7 +40,7 @@
     </div>
 
     <header id="header" style="background-color: #e7e7e7">
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border box-shadow"  style="transition:0.5s">
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border box-shadow" style="transition:0.5s">
             <div class="container">
                 <button id="sidebaropen" class="openbtn mr-2" onclick="openNav()"><i class="fa fa-arrow-right"></i></button>
                 <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">daBoot</a>
@@ -51,11 +51,21 @@
                         <span class="badge" id="navbarnotificationcount"></span>
                     </a>
                 }
+                <div class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="icon-question-sign"></i>
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                        <a class="dropdown-item" asp-controller="Home" asp-action="HowToProjAndRole">Projects and Roles</a>
+                        <a class="dropdown-item" asp-controller="Home" asp-action="HowToTickets">Tickets</a>
+                    </div>
+                </div>
+
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation"  style="transition:0.5s">
+                        aria-expanded="false" aria-label="Toggle navigation" style="transition:0.3s">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex" style="justify-content: flex-end;" style="transition:0.5s">
+                <div class="navbar-collapse collapse d-sm-inline-flex" style="justify-content: flex-end; transition:0.5s">
                     <form action="/search" method="get">
                         <div class="search-container input-group">
                             <input type="search" class="form-control" placeholder="Search..." name="searchstr" id="searchform">
@@ -88,24 +98,25 @@
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.bundle.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
     <script type="text/javascript">
-    $(function() {
-        var xhr = new XMLHttpRequest();
-        xhr.open("POST", "/notification/getcount", true);
-        xhr.onreadystatechange = function () {
-            if (this.readyState != 4) return;
-            if (this.status == 200) {
-                if (this.response > 0) {
-                    document.getElementById("sidebarnotificationcount").innerHTML = this.response.toString();
-                    document.getElementById("navbarnotificationcount").innerHTML = this.response.toString();
+        $(function () {
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", "/notification/getcount", true);
+            xhr.onreadystatechange = function () {
+                if (this.readyState != 4) return;
+                if (this.status == 200) {
+                    if (this.response > 0) {
+                        document.getElementById("sidebarnotificationcount").innerHTML = this.response.toString();
+                        document.getElementById("navbarnotificationcount").innerHTML = this.response.toString();
+                    }
                 }
-            }
-        };
-        xhr.send();
-    });
+            };
+            xhr.send();
+        });
     </script>
 
 

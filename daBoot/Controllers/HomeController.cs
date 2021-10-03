@@ -202,6 +202,18 @@ namespace daBoot.Controllers
             return View();
         }
 
+        [HttpGet("how-to/projects-and-roles")]
+        public IActionResult HowToProjAndRole()
+        {
+            return View();
+        }
+
+        [HttpGet("how-to/tickets")]
+        public IActionResult HowToTickets()
+        {
+            return View();
+        }
+
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
