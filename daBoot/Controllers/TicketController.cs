@@ -135,12 +135,15 @@ namespace daBoot.Controllers
                 {
                     ticket.StatusUpdated = DateTime.Now;
                     ticket.StatusId = statusid;
-                    // Update lead
-                    _db.Notifications.Add(new Notification("<a href=\"/profile/" + own.Username + "\"> " + own.FirstName + " " + own.LastName + "</a> updated status to " + _db.Status.Find(statusid).StatusName + " for ticket: <a href=\"/ticket/" + ticketid + "\"> (ID" + ticketid + ") " + _db.Tickets.Find(ticketid).Subject + "</a>.",
-                        _db.UserProjects.FirstOrDefault(u => u.Project == ticket.Project && u.RoleId == 1).UserId,
-                        null,
-                        null
-                    ));
+                    // Update lead unless lead is own
+                    if (own.Id != _db.UserProjects.FirstOrDefault(u => u.ProjectId == ticket.ProjectId && u.RoleId == 1).UserId)
+                    {
+                        _db.Notifications.Add(new Notification("<a href=\"/profile/" + own.Username + "\"> " + own.FirstName + " " + own.LastName + "</a> updated status to " + _db.Status.Find(statusid).StatusName + " for ticket: <a href=\"/ticket/" + ticketid + "\"> (ID" + ticketid + ") " + _db.Tickets.Find(ticketid).Subject + "</a>.",
+                            _db.UserProjects.FirstOrDefault(u => u.ProjectId == ticket.ProjectId && u.RoleId == 1).UserId,
+                            null,
+                            null
+                        ));
+                    }
                     _db.SaveChanges();
                     UpdateStatusOpenLate();
                 }
@@ -172,12 +175,15 @@ namespace daBoot.Controllers
                 }
                 Ticket ticket = new Ticket(projectid, subject, (int)priorityid, description, userid);
                 _db.Tickets.Add(ticket);
-                // Update lead
-                _db.Notifications.Add(new Notification("A ticket is created: <a href=\"/ticket/" + ticket.Id + "\"> (ID" + ticket.Id + ") " + subject + "</a>. Review it.",
-                    _db.UserProjects.FirstOrDefault(u => u.Project == ticket.Project && u.RoleId == 1).UserId,
-                    null,
-                    null
-                ));
+                // Update lead unless lead is own
+                if (userid != _db.UserProjects.FirstOrDefault(u => u.ProjectId == ticket.ProjectId && u.RoleId == 1).UserId)
+                {
+                    _db.Notifications.Add(new Notification("A ticket is created: <a href=\"/ticket/" + ticket.Id + "\"> (ID" + ticket.Id + ") " + subject + "</a>. Review it.",
+                        _db.UserProjects.FirstOrDefault(u => u.Project == ticket.Project && u.RoleId == 1).UserId,
+                        null,
+                        null
+                    ));
+                }
                 _db.SaveChanges();
             }
             return Redirect("~/thankyou");
@@ -204,8 +210,8 @@ namespace daBoot.Controllers
                 {
                     Comment comment = new(userid, ticketid, commentstr);
                     _db.Comments.Add(comment);
-                    // Update assignee if assigned
-                    if (ticket.AssigneeId != null)
+                    // Update assignee if assigned and not own
+                    if (ticket.AssigneeId != null && ticket.AssigneeId != userid)
                     {
                         _db.Notifications.Add(new Notification("<a href=\"/profile/" + own.Username + "\"> " + own.FirstName + " " + own.LastName + "</a> commented on ticket: <a href=\"/ticket/" + ticketid + "\"> (ID" + ticketid + ") " + _db.Tickets.Find(ticketid).Subject + "</a>.",
                             (int)ticket.AssigneeId,
