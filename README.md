@@ -1,6 +1,8 @@
 # daBoot 
 (Not deployed) Bug submission and tracking software, built using C# on ASP.NET Core MVC framework.
 
+<kbd>![screenshots](https://github.com/wxo15/daBoot/blob/main/website.gif)</kbd>
+
 ## Key Functions and Features
 * Users can create projects and invite others to join.
 * Roles (Lead, dev and testers) can be given to member with different responsibilities and access.
@@ -32,8 +34,4 @@ After that, manually insert the following values to the corresponding tables:
 | Closed, Late, Open, Submitted, Rejected | status  |
 | Lead, Dev, Tester  | role  |
 | High, Medium, Low | priority |
-
-
-<kbd>![screenshots](https://github.com/wxo15/daBoot/blob/main/website.gif)</kbd>
-
 
