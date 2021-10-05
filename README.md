@@ -22,7 +22,7 @@
 * GitHub OAuth login and username+password login options. Latter is encrypted with salted hash using SHA256. More information can be found [here](https://docs.microsoft.com/en-us/dotnet/api/system.security.cryptography.rfc2898derivebytes?view=net-5.0).
 
 ## Project Information
-* The initial software design spec can be found [here](https://github.com/wxo15/daBoot/main/website.gif)
+* The initial software design spec can be found [here](https://github.com/wxo15/daBoot/blob/main/daBoot%20Spec.pdf).
 
 ## Deployment
 * I chose not to deploy due to cost reason. If you'd like to deploy this app, you can replicate the database structure by applying Migrations to a relational database of your choice. More info on EF Core's Migration can be found [here](https://docs.microsoft.com/en-us/ef/core/managing-schemas/migrations/?tabs=dotnet-core-cli).
