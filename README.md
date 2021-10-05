@@ -8,7 +8,7 @@
 * Roles (Lead, dev and testers) can be given to member with different responsibilities and access.
 * Tickets can be submitted by both authenticated and unauthenticated users, to ease bug submission by people outside the project.
 * Tickets can be assigned to a dev/lead with a specific deadline. Comments can be posted on the ticket by anyone in the team.
-* Peripheral functionalities like dashboard, notifications etc.
+* Peripheral functionalities like dashboard, user search, notifications etc.
 
 ## Technology Overview
 ### Front-end
